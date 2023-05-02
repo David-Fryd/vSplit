@@ -33,7 +33,7 @@ const MainMap = () => {
       <MapContainer
         center={[35.8283, -98.5795]}
         zoom={4.5}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", backgroundColor: "#222" }}
         attributionControl={false}
       >
         <AttributionControl position="topright" />
