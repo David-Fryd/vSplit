@@ -10,9 +10,8 @@ const Home: NextPage = () => {
   });
 
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center">
-      <div className="h-screen w-full bg-neutral-500">
-        {/* <Header /> */}
+    <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex h-screen w-full bg-black">
         <MainMap />
       </div>
     </div>
