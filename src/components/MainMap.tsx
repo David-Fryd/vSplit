@@ -6,6 +6,7 @@ import {
   AttributionControl,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { LatLngExpression } from "leaflet";
 
 // NOTE: Had to manually modify /node_modules/react-leaflet/lib/MapContainer.d.ts
 // to add types  "center: number[];", "zoom: number;", and "attributionControl?: boolean;" to the MapContainerProps
@@ -14,19 +15,20 @@ import "leaflet/dist/leaflet.css";
 // https://github.com/PaulLeCam/react-leaflet/issues/1070
 
 const MainMap = () => {
-  const northAmericaPolygon = [
+  const northAmericaPolygon: LatLngExpression[] = [
     [83.107577, -168.992188],
     [83.107577, -55.195312],
     [12.039321, -55.195312],
     [12.039321, -168.992188],
   ];
   // Florida polygon
-  const floridaPolygon = [
+  const floridaPolygon: LatLngExpression[] = [
     [31.707015, -87.890625],
     [31.707015, -79.804688],
     [24.527135, -79.804688],
     [24.527135, -87.890625],
   ];
+
   console.log("main map re-render");
   return (
     <div className="h-full w-full">
