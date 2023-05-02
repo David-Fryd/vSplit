@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-import dynamic from "next/dynamic";
 
 const Test: NextPage = () => {
   return (
