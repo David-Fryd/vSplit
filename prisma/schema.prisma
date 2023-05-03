@@ -7,6 +7,7 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
   relationMode = "prisma"
 }
 
@@ -23,38 +24,61 @@ datasource db {
 model Sector {
   /// Arbitrary unique ID corresponding to a given Sector (id in DB)
   /// Important because the sectorID is not unique across FIRs
-  uniqueID    Int    @id @default(autoincrement())
+  uniqueSectorID Int    @id @default(autoincrement())
   /// The sector's ID. "Unique" identifier within an FIR (usually numeric in VATUSA)
   /// This is the property that associates a sector in the DB w a sector in the provided <fir>Sectors.geojson
   /// "46", "23", "10", "TPA", ...
-  sectorID    String
+  sectorID       String
   /// The sector's name, as it should appear on the map
   /// "46 ALUTO", "ALUTO", "46", ...
-  sectorLabel String
+  sectorLabel    String
 
   /// Notes or remarks about a given sector
   notes String
 
   /// The name of the FIR the Sector belongs to
   /// "ZMA", "ZJX", ...
-  firName String 
+  firName String
   /// The FIR the Sector belongs to
   fir     FIR    @relation("FIRtoSectors", fields: [firName], references: [firName], onDelete: Cascade)
+
+  /// The Group the Sector belongs to, if any
+  group Group? @relation("GroupToSectors", fields: [uniqueSectorID], references: [uniqueGroupID])
+
+  @@index([firName])
+  @@index([uniqueSectorID])
+}
+
+model Group {
+  /// Arbitrary unique ID corresponding to a given Group (id in DB)
+  /// Important because the groupName is not unique across FIRs
+  uniqueGroupID Int    @id @default(autoincrement())
+  /// User-set name of the group
+  /// "46 ALUTO", "Group A", ...
+  groupName     String
+
+  sectors Sector[] @relation("GroupToSectors")
+
+  /// Notes or remarks about a given group
+  notes String
+
+  /// The name of the FIR the Group belongs to
+  /// "ZMA", "ZJX", ...
+  firName String
+  fir     FIR    @relation("FIRtoGroups", fields: [firName], references: [firName], onDelete: Cascade)
 
   @@index([firName])
 }
 
-// model Group {
-
-// }
 /// Flight Information Region
 model FIR {
   id                        Int      @id @default(autoincrement())
   firName                   String   @unique // "ZMA"
-  firLabel                  String   // "Miami ARTCC"
+  firLabel                  String // "Miami ARTCC"
   sectorFileName            String // "zmaSectors.geojson"
   subtractiveSectorFileName String // "zmaSubtractiveSectors.geojson"
   sectors                   Sector[] @relation("FIRtoSectors")
+  groups                    Group[]  @relation("FIRtoGroups")
 }
 
 // model Example {
