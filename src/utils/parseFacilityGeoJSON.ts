@@ -18,6 +18,8 @@ function isFeatureCandidate(obj: unknown): obj is FacilityFeature {
 }
 
 function isFacilityGeoJSONCandidate(obj: unknown): obj is FacilityGeoJSON {
+  console.log("facility geojson candidate checking");
+  console.log("type of obj: " + typeof obj);
   return (
     typeof obj === "object" &&
     obj !== null &&
@@ -42,21 +44,26 @@ function isFacilityGeometryCandidate(obj: unknown): obj is FacilityGeometry {
  * @throws Error if the data is invalid
  */
 export function parseFacilityGeoJSON(data: unknown): FacilityGeoJSON {
-  if (!isFacilityGeoJSONCandidate(data)) {
+  if (typeof data !== "string") {
+    throw new Error("Invalid input type: expected a raw string from a file");
+  }
+  const jsonData = JSON.parse(data) as unknown;
+
+  if (!isFacilityGeoJSONCandidate(jsonData)) {
     throw new Error(
       "The data is not a FacilityGeoJSON candidate (lacks type or features high-level field)"
     );
   }
 
-  if (data.type !== "FeatureCollection") {
+  if (jsonData.type !== "FeatureCollection") {
     throw new Error("The data is not of type 'FeatureCollection'");
   }
 
-  if (!Array.isArray(data.features)) {
+  if (!Array.isArray(jsonData.features)) {
     throw new Error("The features property is not an array");
   }
 
-  data.features.forEach((feature: unknown, index: number) => {
+  jsonData.features.forEach((feature: unknown, index: number) => {
     if (!isFeatureCandidate(feature)) {
       throw new Error(`Feature at index ${index} is not a valid candidate`);
     }
@@ -88,5 +95,5 @@ export function parseFacilityGeoJSON(data: unknown): FacilityGeoJSON {
     }
   });
 
-  return data; // (as FacilityGeoJSON)
+  return jsonData; // (as FacilityGeoJSON)
 }
