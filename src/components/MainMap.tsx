@@ -96,15 +96,15 @@ const MainMap = () => {
           <Polygon
             key={index}
             pathOptions={{
-              // color: randomHexColor,
-              color: "blue",
+              color: randomHexColor,
+              // color: "blue",
               weight: 1,
               dashArray: "5, 5, 5, 2",
             }}
             positions={positions}
           />
           <SVGOverlay attributes={{ stroke: "red" }} bounds={bounds}>
-            <text x="50%" y="50%" stroke="white">
+            <text x="50%" y="50%" /*stroke="white"*/ stroke={randomHexColor}>
               {/* show every key value pair inside of feature.properties */}
               {/* TODO, maybe some don't render on zoom level, etc... */}
               {Object.entries(feature.properties).map(([key, value]) => (
