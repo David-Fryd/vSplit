@@ -37,6 +37,7 @@ export const Sidebar = () => {
       <p className="text-md text-center text-green-500">AUTH REQ</p> */}
       {/* <NavLink href="/">SECTOR CONFIG</NavLink> */}
       <NavLink href="/sectorconfig">SECTOR CONFIG</NavLink>
+      <NavLink href="/firconfig">FIR CONFIG</NavLink>
       <ExternalLink href="https://github.com/David-Fryd/easy-flash">
         <p className="text-sm">BUGS & FEAT. REQS</p>
       </ExternalLink>
