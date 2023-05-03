@@ -1,18 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// generator client {
-//     provider = "prisma-client-js"
-// }
-
-// datasource db {
-//     provider = "sqlite"
-//     // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-//     // Further reading:
-//     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-//     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-//     url      = env("DATABASE_URL")
-// }
+// Prisma schema docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -24,60 +10,51 @@ datasource db {
   relationMode = "prisma"
 }
 
-/// A Volume is a basic 3D shape that defines the geometry of a piece of airspace
-/// Sectors are comprised of one or more Volumes
-model Volume {
-  // Arbitrary unique ID corresponding to a given volume
-  id Int @id @default(autoincrement())
-
-  /// The GeoJSON representation of the volume
-  FeatureCollection Json @default("{}")
-
-  /// The lower altitude of the volume (in FL, hundreds of feet)
-  altitudeMin Int
-  /// The upper altitude of the volume (in FL, hundreds of feet)
-  altitudeMax Int
-
-  /// Notes or remarks about a given volume
-  notes String
-
-  /// The arbitrary unique ID of the sector the volume belongs to
-  sectorUniqueID Int
-  /// The sector the volume belongs to
-  sector         Sector @relation(fields: [sectorUniqueID], references: [uniqueID], onDelete: Cascade)
-
-  @@index([sectorUniqueID])
-}
-
-/// A sector is a piece of airspace that is controlled by a single controller
-/// A sector is comprised of one or more volumes that define the geometry of the airspace
+/// A sector is a piece of airspace that is controlled by a single controller.
+/// Sectors are defined by an altitude range and coordinates detailing their boundaries
+/// Both the altitude range and coordinates are defined in the <fir>Sectors.geojson file
+/// Sectors stored in the database are used to 
+///  a) Parse the <fir>Sectors.geojson file
+///       - If a sectorID used in the .geojson file is not in the DB, 
+///         it will be ignored during processing and visualization.
+///       - Sectors defined in the DB indicate which sectors
+///         should be displayed on the map and group-able by controllers.
+///  b) Store additional metadata about a sector (label, notes, etc.)
 model Sector {
-  /// Arbitrary unique ID corresponding to a given Sector 
+  /// Arbitrary unique ID corresponding to a given Sector (id in DB)
   /// Important because the sectorID is not unique across FIRs
   uniqueID    Int    @id @default(autoincrement())
-  /// The sector's ID (unique numeric identifier within an FIR)
-  /// 46, 23, 10, ...
-  sectorID    Int
+  /// The sector's ID. "Unique" identifier within an FIR (usually numeric in VATUSA)
+  /// This is the property that associates a sector in the DB w a sector in the provided <fir>Sectors.geojson
+  /// "46", "23", "10", "TPA", ...
+  sectorID    String
   /// The sector's name, as it should appear on the map
   /// "46 ALUTO", "ALUTO", "46", ...
   sectorLabel String
 
-  /// The volumes that define the geometry of the sector
-  volumes Volume[]
+  /// Notes or remarks about a given sector
+  notes String
 
   /// The name of the FIR the Sector belongs to
   /// "ZMA", "ZJX", ...
-  firName String
+  firName String 
   /// The FIR the Sector belongs to
   fir     FIR    @relation("FIRtoSectors", fields: [firName], references: [firName], onDelete: Cascade)
 
   @@index([firName])
 }
 
+// model Group {
+
+// }
+/// Flight Information Region
 model FIR {
-  id      Int      @id @default(autoincrement())
-  firName String   @unique // "ZMA"
-  sectors Sector[] @relation("FIRtoSectors")
+  id                        Int      @id @default(autoincrement())
+  firName                   String   @unique // "ZMA"
+  firLabel                  String   // "Miami ARTCC"
+  sectorFileName            String // "zmaSectors.geojson"
+  subtractiveSectorFileName String // "zmaSubtractiveSectors.geojson"
+  sectors                   Sector[] @relation("FIRtoSectors")
 }
 
 // model Example {
@@ -88,46 +65,49 @@ model FIR {
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?  @db.Text
-    access_token      String?  @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?  @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Manually added for quick indexing (prisma's recommendation)
+  @@index([userId])
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
