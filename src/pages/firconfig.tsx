@@ -1,6 +1,6 @@
 import { type NextPage } from "next";
 
-const SectorConfig: NextPage = () => {
+const FIRConfig: NextPage = () => {
   return (
     <div className="flex h-screen w-full items-center justify-center border-2 bg-neutral-900">
       <div className="flex h-screen w-1/2 flex-col items-center justify-center  p-2 font-mono text-neutral-50">
@@ -20,12 +20,12 @@ const SectorConfig: NextPage = () => {
           Log In
         </button>
         <p>
-          TODO: Grouping and config logic for sectors defined in the
-          sector.geojson & FIR config page
+          TODO: Associate sectors with the sectors you expect to see in the
+          sectordata file (add labels of sectors and such here)
         </p>
       </div>
     </div>
   );
 };
 
-export default SectorConfig;
+export default FIRConfig;
