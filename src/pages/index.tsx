@@ -18,3 +18,19 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+// // getServerSideProps:
+// export function getServerSideProps() {
+//   // Fetch data using the facilitydata trpc API
+//   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+//   // BROKEN: Causes  `TypeError: Cannot read properties of null (reading 'useContext')`
+//   const data = api.facilitydata.getAllSector.useQuery();
+//   // Pointless await:
+
+//   // // Fetch data from external API
+//   // const res = await fetch(`https://.../data`)
+//   // const data = await res.json()
+
+//   // // Pass data to the page via props
+//   return { props: { data } };
+// }

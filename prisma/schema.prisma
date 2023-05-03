@@ -31,7 +31,7 @@ model Volume {
   id Int @id @default(autoincrement())
 
   /// The GeoJSON representation of the volume
-  polygon Json
+  FeatureCollection Json @default("{}")
 
   /// The lower altitude of the volume (in FL, hundreds of feet)
   altitudeMin Int

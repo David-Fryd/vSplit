@@ -7,20 +7,32 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import type { LatLngExpression } from "leaflet";
+import { api } from "../utils/api";
+import type { GeoJSON } from "leaflet";
 
-// NOTE: Had to manually modify /node_modules/react-leaflet/lib/MapContainer.d.ts
-// to add types  "center: number[];", "zoom: number;", and "attributionControl?: boolean;" to the MapContainerProps
-// interface. Seems like extension of MapOptions doesn't work or?...
-// Also had to add "attribution: string;" to TileLayerProps in easy-flash/node_modules/react-leaflet/lib/TileLayer.d.ts
-// https://github.com/PaulLeCam/react-leaflet/issues/1070
+// type VolumePolygon = {
+//   bounds: LatLngExpression[];
+// };
 
+// interface MainMapProps {
+//   sectorsWithVolumes: VolumePolygon;
+// }
+
+// const testPolygon: VolumePolygon = {
+//   "bounds": [
+//     [83.107577, -168.992188],
+//     [83.107577, -55.195312],
+//     [12.039321, -55.195312],
+//     [12.039321, -168.992188],
+//   ],
+// };
+
+// const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
-  // const northAmericaPolygon: LatLngExpression[] = [
-  //   [83.107577, -168.992188],
-  //   [83.107577, -55.195312],
-  //   [12.039321, -55.195312],
-  //   [12.039321, -168.992188],
-  // ];
+  const sectorData = api.facilitydata.getAllSectorWithVolumes.useQuery();
+
+  // Ultimately get the FeatureCollection as a typed GeoJSON JSON object
+
   // Florida polygon
   const floridaPolygon: LatLngExpression[] = [
     [31.707015, -87.890625],
@@ -43,7 +55,19 @@ const MainMap = () => {
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
-        <Polygon pathOptions={{ color: "blue" }} positions={floridaPolygon} />
+        <Polygon
+          pathOptions={{ color: "blue", weight: 1, dashArray: "20, 20" }}
+          positions={floridaPolygon}
+        />
+        <Polygon
+          pathOptions={{
+            color: "red",
+            weight: 1,
+            dashArray: "20, 20",
+            dashOffset: "20",
+          }}
+          positions={floridaPolygon}
+        />
       </MapContainer>
     </div>
   );

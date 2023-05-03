@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 const NavLink = ({ href, children }: { href: string; children: ReactNode }) => {
   return (
     <Link
-      className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg font-bold"
+      className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg"
       href={href}
     >
       {children}
@@ -21,7 +21,7 @@ const ExternalLink = ({
 }) => {
   return (
     <a
-      className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg font-bold"
+      className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg "
       href={href}
     >
       {children}
@@ -36,9 +36,9 @@ export const Sidebar = () => {
       {/* <div className="p-4"></div>
       <p className="text-md text-center text-green-500">AUTH REQ</p> */}
       {/* <NavLink href="/">SECTOR CONFIG</NavLink> */}
-      <NavLink href="/test">SECTOR CONFIG</NavLink>
+      <NavLink href="/sectorconfig">SECTOR CONFIG</NavLink>
       <ExternalLink href="https://github.com/David-Fryd/easy-flash">
-        <p className="text-sm">Bugs & Feature Requests</p>
+        <p className="text-sm">BUGS & FEAT. REQS</p>
       </ExternalLink>
     </div>
   );
