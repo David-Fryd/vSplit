@@ -76,7 +76,12 @@ const MainMap = () => {
       );
 
       // Calculate the bounding box for the polygon
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const bounds = new LatLngBounds(positions);
+      // TODO, REMOVE AND FIX ABOVE BOUNDS CALC, perhaps manually define label lat/long in FIR CONFIG?
+      // Look more into smoothing out turf fxns into leaflet cords...
+
       // const bboxBounds = bbox(positions);
       // console.log("bboxBounds:", bboxBounds);
       // Convert from bbox to LatLngBounds
@@ -101,6 +106,7 @@ const MainMap = () => {
           <SVGOverlay attributes={{ stroke: "red" }} bounds={bounds}>
             <text x="50%" y="50%" stroke="white">
               {/* show every key value pair inside of feature.properties */}
+              {/* TODO, maybe some don't render on zoom level, etc... */}
               {Object.entries(feature.properties).map(([key, value]) => (
                 <tspan className="font-mono" key={key} x="50%" dy="1.2em">
                   {key}: {value}
