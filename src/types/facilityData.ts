@@ -4,7 +4,7 @@ export type FacilityGeoJSON = {
 };
 
 // FacilityFeature is A single "volume" (polygon associated w/ sectors & alts by the properties)
-type FacilityFeature = {
+export type FacilityFeature = {
   type: string; // "Feature" (Enforced in validation)
   properties: {
     /// SectorID -> AltitudeRange
