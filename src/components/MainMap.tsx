@@ -4,14 +4,16 @@ import {
   TileLayer,
   Polygon,
   AttributionControl,
+  SVGOverlay,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import type { LatLngExpression } from "leaflet";
+import { LatLngBounds } from "leaflet";
 import { api } from "../utils/api";
 import type { GeoJSON } from "leaflet";
 import type { FacilityGeoJSON, FacilityFeature } from "~/types/facilityData";
 import { parseFacilityGeoJSON } from "~/utils/parseFacilityGeoJSON";
-
+import { bbox } from "@turf/turf";
 // const testPolygon: VolumePolygon = {
 //   "bounds": [
 //     [83.107577, -168.992188],
@@ -68,17 +70,45 @@ const MainMap = () => {
   };
 
   const renderPolygons = (features: FacilityFeature[]) => {
-    return features.map((feature, index) => {
+    return features.map((feature: FacilityFeature, index) => {
       const positions = coordinatesToLatLngExpression(
         feature.geometry.coordinates
       );
 
+      // Calculate the bounding box for the polygon
+      const bounds = new LatLngBounds(positions);
+      // const bboxBounds = bbox(positions);
+      // console.log("bboxBounds:", bboxBounds);
+      // Convert from bbox to LatLngBounds
+      // const bounds = new LatLngBounds(bboxBounds);
+
+      // Create a random hex color (i.e '#3388ff')
+      const randomHexColor = `#${Math.floor(Math.random() * 16777215).toString(
+        16
+      )}`;
       return (
-        <Polygon
-          key={index}
-          pathOptions={{ color: "blue", weight: 1, dashArray: "5, 5, 5, 2" }}
-          positions={positions}
-        />
+        <div key={index} className="sector">
+          <Polygon
+            key={index}
+            pathOptions={{
+              // color: randomHexColor,
+              color: "blue",
+              weight: 1,
+              dashArray: "5, 5, 5, 2",
+            }}
+            positions={positions}
+          />
+          <SVGOverlay attributes={{ stroke: "red" }} bounds={bounds}>
+            <text x="50%" y="50%" stroke="white">
+              {/* show every key value pair inside of feature.properties */}
+              {Object.entries(feature.properties).map(([key, value]) => (
+                <tspan className="font-mono" key={key} x="50%" dy="1.2em">
+                  {key}: {value}
+                </tspan>
+              ))}
+            </text>
+          </SVGOverlay>
+        </div>
       );
     });
   };
