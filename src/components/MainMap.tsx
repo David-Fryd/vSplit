@@ -71,6 +71,7 @@ const renderPolygons = (features: FacilityFeature[]) => {
     const randomHexColor = `#${Math.floor(Math.random() * 16777215).toString(
       16
     )}`;
+    // const randomHexColor = "white";
     return (
       <div key={index} className="sector">
         <Polygon
@@ -101,7 +102,10 @@ const renderPolygons = (features: FacilityFeature[]) => {
 
 // const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
+  // Re-request even on tab in/out
   const firData = api.facilitydata.getFIRsWithSectors.useQuery();
+
+  // TODO: Re-request only on page reload?...
 
   const [allFacilitiesGeoJSON, setAllFacilitiesGeoJSON] =
     React.useState<FacilityGeoJSON[]>();
@@ -175,9 +179,10 @@ const MainMap = () => {
           positions={floridaPolygon}
         /> */}
         {/* {zmaSectorGeoJSON && renderPolygons(zmaSectorGeoJSON.features)} */}
-        {allFacilitiesGeoJSON?.map((facilityGeoJSON) =>
-          renderPolygons(facilityGeoJSON.features)
-        )}
+        {allFacilitiesGeoJSON?.map((facilityGeoJSON) => {
+          // console.log("facilityGeoJSON:", facilityGeoJSON);
+          return renderPolygons(facilityGeoJSON.features);
+        })}
       </MapContainer>
     </div>
   );
