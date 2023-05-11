@@ -33,6 +33,9 @@ model Sector {
   /// "46 ALUTO", "ALUTO", "46", ...
   sectorLabel    String
 
+  /// Frequency that this sector can be found on
+  sectorFrequency String @default("000.000")
+
   /// Notes or remarks about a given sector
   notes String
 
