@@ -58,7 +58,7 @@ const QuickloadFlyout = () => {
 
 export const Sidebar = () => {
   return (
-    <div className="flex h-screen w-28 flex-col bg-neutral-900 font-mono text-neutral-100">
+    <div className="sticky top-0 flex h-screen w-28 flex-col bg-neutral-900 font-mono text-neutral-100">
       <div className="h-full">
         <MapNav />
         <SettingsFlyout />
@@ -73,6 +73,7 @@ export const Sidebar = () => {
       </div>
       <div className="flex-1">
         <NavLink href="/about">ABOUT</NavLink>
+        <NavLink href="/privacy">PRIVACY</NavLink>
         <ExternalLink href="https://github.com/David-Fryd/easy-flash">
           <p className="text-sm">BUGS & FEAT. REQS</p>
         </ExternalLink>
