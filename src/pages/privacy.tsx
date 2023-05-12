@@ -34,7 +34,7 @@ const About: NextPage = () => {
             submit a pull request
           </a>{" "}
           to the open-source <b>vSplit</b> repostiry, and label your post with
-          the "Privacy Policy" tag.
+          the &quot;Privacy Policy&quot; tag.
         </p>
         <p className=" w-3/4 ">
           This privacy policy applies only to online activities related to{" "}
@@ -121,24 +121,24 @@ const About: NextPage = () => {
         <p className=" w-3/4">
           <b>vSplit</b> follows a standard procedure of using log files. These
           files log visitors when they visit websites. All hosting companies do
-          this and a part of hosting services' analytics. The information
+          this and a part of hosting services&apos; analytics. The information
           collected by log files include internet protocol (IP) addresses,
           browser type, Internet Service Provider (ISP), date and time stamp,
           referring/exit pages, and possibly the number of clicks. These are not
           linked to any information that is personally identifiable. The purpose
           of the information is for analyzing trends, administering the site,
-          tracking users' movement on the website, and gathering demographic
-          information.
+          tracking users&apos; movement on the website, and gathering
+          demographic information.
         </p>
         <p className="pt-4 text-center text-4xl font-bold">Use of Cookies</p>
         <p className=" w-3/4">
-          Like most other websites, <b>vSplit</b> uses 'cookies'. These cookies
-          are used to store information including visitors' preferences,
-          authentication state, and the pages on the website that the visitor
-          accesses or visits. The information is used to enable authenticated
-          use of the service, and optimize the users' experience by customizing
-          our web page content based on visitors' browser type and/or other
-          information.
+          Like most other websites, <b>vSplit</b> uses &apos;cookies&apos;.
+          These cookies are used to store information including visitors&apos;
+          preferences, authentication state, and the pages on the website that
+          the visitor accesses or visits. The information is used to enable
+          authenticated use of the service, and optimize the users&apos;
+          experience by customizing our web page content based on visitors&apos;
+          browser type and/or other information.
         </p>
         <p className="pt-4 text-center text-4xl font-bold">
           GDPR Privacy Policy (Data Protection Rights)
