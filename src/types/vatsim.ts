@@ -1,5 +1,6 @@
-export type { VATData, PilotData, ControllerData };
+export type { VATData, PilotData, ControllerData, VATSIMProfile };
 
+// Types for VATSIM Data JSON sites
 type ControllerData = {
   cid: number;
   name: string;
@@ -61,4 +62,48 @@ type VATData = {
   };
   pilots: PilotData[];
   controllers: ControllerData[];
+};
+
+// Types for VATSIM Connect (Auth)
+type VATSIMProfile = {
+  data: {
+    cid: string;
+    personal: {
+      name_first: string;
+      name_last: string;
+      name_full: string;
+      email: string;
+      country: {
+        id: string;
+        name: string;
+      };
+    };
+    vatsim: {
+      rating: {
+        id: number;
+        long: string;
+        short: string;
+      };
+      pilotrating: {
+        id: number;
+        long: string;
+        short: string;
+      };
+      division: {
+        id: string;
+        name: string;
+      };
+      region: {
+        id: string;
+        name: string;
+      };
+      subdivision: {
+        id: string | null;
+        name: string | null;
+      };
+    };
+    oauth: {
+      token_valid: string;
+    };
+  };
 };
