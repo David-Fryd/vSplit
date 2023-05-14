@@ -101,8 +101,8 @@ model Account {
     access_token      String? //@db.LongText
     expires_at        Int?
     token_type        String?
-    scope             Json?//String?
-    scopes            Json?
+    scope             String[]
+    scopes            String[]
     id_token          String? //@db.LongText
     session_state     String? //@db.LongText
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
