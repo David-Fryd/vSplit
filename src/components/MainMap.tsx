@@ -51,16 +51,8 @@ const renderPolygons = (features: FacilityFeature[]) => {
     // TODO, REMOVE AND FIX ABOVE BOUNDS CALC, perhaps manually define label lat/long in FIR CONFIG?
     // Look more into smoothing out turf fxns into leaflet cords...
 
-    // const bboxBounds = bbox(positions);
-    // console.log("bboxBounds:", bboxBounds);
-    // Convert from bbox to LatLngBounds
-    // const bounds = new LatLngBounds(bboxBounds);
-
-    // const fetchAllFacilitiesGeoJSON = async () => {
-
-    // }
-
     // Ultimately get the FeatureCollection as a typed GeoJSON JSON object
+    console.log("feature", feature);
 
     // Iterate through each facility GeoJSON: (every FIR has the name of its associated sector file hosted in the public directory)
 
@@ -156,7 +148,8 @@ const MainMap = () => {
     <div className="h-full w-full">
       <MapContainer
         center={[35.8283, -98.5795]}
-        zoom={4.5}
+        zoom={5}
+        zoomSnap={0.5}
         style={{ height: "100%", width: "100%", backgroundColor: "#222" }}
         attributionControl={false}
       >
