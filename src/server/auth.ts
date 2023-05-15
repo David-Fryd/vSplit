@@ -61,6 +61,7 @@ export const authOptions: NextAuthOptions = {
         url: "https://auth.vatsim.net/oauth/authorize",
         params: {
           response_type: "code",
+          // scope: "full_name vatsim_details email",
           scope: "full_name vatsim_details email",
         },
       },
@@ -103,7 +104,6 @@ export const authOptions: NextAuthOptions = {
       },
       clientId: process.env.VATSIM_DEV_CLIENT_ID,
       clientSecret: process.env.VATSIM_DEV_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
     },
     /**
      * ...add more providers here.
