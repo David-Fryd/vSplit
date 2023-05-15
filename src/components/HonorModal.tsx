@@ -83,7 +83,8 @@ export const HonorModal = () => {
                             Honor Statement
                           </Dialog.Title>
                           <div className="mt-2 flex flex-col items-center justify-center text-sm text-gray-500">
-                            <p className="">On my honor,</p>
+                            <p className="pb-1">On my honor,</p>
+
                             <div className="w-3/4 ">
                               <ul className="list-disc text-left">
                                 <li>
@@ -101,9 +102,12 @@ export const HonorModal = () => {
                                   modify.
                                 </li>{" "}
                                 <li>
-                                  I promise to be <b>very careful</b> when
-                                  modifying data, knowing that mistakes I make
-                                  may cause problems for others.
+                                  I promise to be{" "}
+                                  <b>
+                                    <i>very careful</i>
+                                  </b>{" "}
+                                  when modifying data, knowing that mistakes I
+                                  make may cause problems for others.
                                 </li>
                                 <li>
                                   If I have any questions, I will ask for help
@@ -119,7 +123,7 @@ export const HonorModal = () => {
                       <div className="mt-5 sm:mt-6">
                         <button
                           type="button"
-                          className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-neutral-400"
+                          className="inline-flex w-full justify-center gap-x-1 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:bg-neutral-400"
                           onClick={() => {
                             if (
                               sessionData &&
@@ -136,9 +140,12 @@ export const HonorModal = () => {
                           }}
                           disabled={!checked}
                         >
-                          Agree and Continue
+                          Agree and Continue as
+                          <span className="italic">
+                            {sessionData?.user.name}
+                          </span>
                         </button>
-                        <div className="mt-2 flex items-center justify-center gap-x-2">
+                        <div className="mt-2 flex items-center justify-center gap-x-1">
                           {" "}
                           <input
                             id="I have read and agree to the Honor Statement"
