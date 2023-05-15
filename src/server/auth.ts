@@ -71,17 +71,19 @@ export const authOptions: NextAuthOptions = {
       ) {
         const ratingID = profile.data.vatsim.rating.id;
 
-        // Use Prisma's upsert method to either create a new user or update an existing one
-        await prisma.user.upsert({
+        // Try to find the user first
+        const existingUser = await prisma.user.findUnique({
           where: { id: user.id },
-          update: { ratingID },
-          create: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            ratingID,
-          },
         });
+
+        if (existingUser) {
+          // If the user exists, update their ratingID
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { ratingID },
+          });
+        }
+        // If no existign user, NextAuth has default behavior for creating user
       }
 
       // If no errors are thrown, sign-in will be successful
