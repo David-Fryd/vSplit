@@ -73,6 +73,8 @@ const SignInOutButton = ({ sessionData }: { sessionData: any }) => {
 export const Sidebar = () => {
   const { data: sessionData } = useSession();
 
+  console.log("sessionData ratingID: ", sessionData?.user.ratingID);
+
   return (
     <div className="sticky top-0 flex h-screen w-28 flex-col bg-neutral-900 font-mono text-neutral-100">
       <div className="h-full">
@@ -86,13 +88,15 @@ export const Sidebar = () => {
         >
           AUTH{!sessionData ? "\nREQUIRED" : "ED"}
         </p>
-        {sessionData && (
+        {sessionData && sessionData.user && (
           <p
             className={`text-center text-xs font-bold ${
               sessionData ? "text-green-400" : "text-red-400"
             }`}
           >
             {sessionData.user.name}
+            <br />
+            rating: {sessionData.user.ratingID}
           </p>
         )}
         <div
