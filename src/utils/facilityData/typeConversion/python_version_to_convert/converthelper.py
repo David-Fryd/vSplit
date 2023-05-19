@@ -24,7 +24,7 @@ with open('data.geojson') as f:
     data = json.load(f)
 
 # Transform the data
-new_data = {'sectors': {}, 'volumes': []}
+new_data = {'fir': {}, 'sectors': {}, 'volumes': []}
 ownership_keys = set()
 for feature in data['features']:
     # Compute the centroid of the bounding box for the feature
@@ -50,10 +50,12 @@ for feature in data['features']:
     new_data['volumes'].append(new_object)
 
 # Mapping ownership keys to labels and sort the keys
-ownership_with_labels = {key: f"Sector {key} Label" for key in sorted(ownership_keys)}
+ownership_with_labels = {key: f"SECTOR_{key}_LABEL" for key in sorted(ownership_keys)}
 
 # Add the list of ownership keys and their labels to the new data
 new_data['sectors'] = ownership_with_labels
+
+new_data['fir'] = {'firName': 'FIR_NAME (e.g: ZMA)', 'firLabel': 'FIR_LABEL (e.g: Miami ARTCC)'}
 
 # Save the transformed data
 with open('new_data.json', 'w') as f:

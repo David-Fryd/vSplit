@@ -1,7 +1,13 @@
 // Each facility will provide a .json file of the following format:
 export type FacilityData = {
+  fir: FIRMetadata;
   sectors: Sectors;
   volumes: Volume[];
+};
+
+export type FIRMetadata = {
+  firName: string;
+  firLabel: string;
 };
 
 export type AltitudeRange = [number, number];

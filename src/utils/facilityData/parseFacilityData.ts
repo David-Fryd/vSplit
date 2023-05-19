@@ -1,4 +1,5 @@
 import type {
+  FIRMetadata,
   FacilityData,
   Volume,
   Sectors,
@@ -14,9 +15,19 @@ function isFacilityData(data: unknown): data is FacilityData {
 
   const dataObject = data as { [k: string]: unknown };
 
-  if (!("sectors" in dataObject) || !("volumes" in dataObject)) {
+  if (
+    !("sectors" in dataObject) ||
+    !("volumes" in dataObject) ||
+    !("fir" in dataObject)
+  ) {
     throw new Error(
-      "Invalid FacilityData: data should contain sectors and volumes"
+      "Invalid FacilityData: data should contain fir, sectors, and volumes"
+    );
+  }
+
+  if (!isFirMetadata(dataObject.fir)) {
+    throw new Error(
+      "Invalid FacilityData: fir (fir metadata) field is not valid"
     );
   }
 
@@ -29,6 +40,22 @@ function isFacilityData(data: unknown): data is FacilityData {
     !dataObject.volumes.every((volume) => isVolume(volume))
   ) {
     throw new Error("Invalid FacilityData: volumes is not valid");
+  }
+
+  return true;
+}
+
+function isFirMetadata(data: unknown): data is FIRMetadata {
+  if (typeof data !== "object" || data === null) {
+    throw new Error("Invalid FIRMetadata: fir should be an object");
+  }
+
+  const dataObject = data;
+
+  if (!("firName" in dataObject) || !("firLabel" in dataObject)) {
+    throw new Error(
+      "Invalid FIRMetadata: fir must contain firName and firLabel"
+    );
   }
 
   return true;

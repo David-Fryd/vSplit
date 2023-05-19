@@ -1,16 +1,20 @@
 {
+  "fir": {
+    "firName": "ZMA",
+    "firLabel": "Miami ARTCC"
+  },
   "sectors": {
-    "05": "Sector 05 Label",
-    "06": "Sector 06 Label",
-    "08": "Sector 08 Label",
-    "19": "Sector 19 Label",
-    "20": "Sector 20 Label",
-    "21": "Sector 21 Label",
-    "23": "Sector 23 Label",
-    "25": "Sector 25 Label",
-    "41": "Sector 41 Label",
-    "42": "Sector 42 Label",
-    "46": "Sector 46 Label"
+    "05": "SECTOR_05_LABEL",
+    "06": "SECTOR_06_LABEL",
+    "08": "SECTOR_08_LABEL",
+    "19": "SECTOR_19_LABEL",
+    "20": "SECTOR_20_LABEL",
+    "21": "SECTOR_21_LABEL",
+    "23": "SECTOR_23_LABEL",
+    "25": "SECTOR_25_LABEL",
+    "41": "SECTOR_41_LABEL",
+    "42": "SECTOR_42_LABEL",
+    "46": "46 ALUTO"
   },
   "volumes": [
     {
