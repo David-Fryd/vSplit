@@ -11,6 +11,7 @@ datasource db {
   relationMode      = "prisma"
 }
 
+/// TODO: Update outdated information
 /// A sector is a piece of airspace that is controlled by a single controller.
 /// Sectors are defined by an altitude range and coordinates detailing their boundaries
 /// Both the altitude range and coordinates are defined in the <fir>Sectors.geojson file
@@ -34,7 +35,7 @@ model Sector {
   sectorLabel    String
 
   /// Frequency that this sector can be found on
-  sectorFrequency String @default("000.000")
+  // sectorFrequency String @default("000.000")
 
   /// Notes or remarks about a given sector
   notes String
@@ -60,6 +61,9 @@ model Group {
   /// "46 ALUTO", "Group A", ...
   groupName     String
 
+  /// Frequency that this group of sectors is controlled on
+  groupFrequency String
+
   sectors Sector[] @relation("GroupToSectors")
 
   /// Notes or remarks about a given group
@@ -78,8 +82,7 @@ model FIR {
   id                        Int      @id @default(autoincrement())
   firName                   String   @unique // "ZMA"
   firLabel                  String // "Miami ARTCC"
-  sectorFileName            String // "zmaSectors.geojson"
-  subtractiveSectorFileName String // "zmaSubtractiveSectors.geojson"
+  facilityDataFileName      String // "zmaSectors.json"
   sectors                   Sector[] @relation("FIRtoSectors")
   groups                    Group[]  @relation("FIRtoGroups")
 }
@@ -89,6 +92,7 @@ model FIR {
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
 // }
+
 // Necessary for Next auth
 model Account {
   id                String   @id @default(cuid())
