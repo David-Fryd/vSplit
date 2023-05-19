@@ -1,39 +1,30 @@
-export type FacilityGeoJSON = {
-  type: string;
-  features: FacilityFeature[];
+// Each facility will provide a .json file of the following format:
+export type FacilityData = {
+  sectors: Sectors;
+  volumes: Volume[];
 };
 
-// FacilityFeature is A single "volume" (polygon associated w/ sectors & alts by the properties)
-export type FacilityFeature = {
-  type: string; // "Feature" (Enforced in validation)
-  properties: {
-    /// SectorID -> AltitudeRange
-    [key: string]: string; // "23" : "0-999"
-    // NOTE: All properties are treated as if
-    // they are sector names/altitudes corresponding to the FacilityFeature
-    // NOTE: This is a result of encouraging people to build their GeoJSON
-    // files with geojson.io, which when you add a property adds it as a "key -> value"
-    // preventing us from using a more strucutred approach like properties: {{sector: string, altitudes: string}[]}
+export type AltitudeRange = [number, number];
+
+export type Ownership = {
+  [sectorId: string]: AltitudeRange[];
+};
+
+export type Geojson = {
+  type: "Feature";
+  geometry: {
+    coordinates: number[][][];
+    type: "Polygon";
   };
-  geometry: FacilityGeometry;
-  id?: number;
+  id: number;
 };
 
-export type FacilityGeometry = {
-  coordinates: number[][][]; // [[[long, lat], [long, lat], ...], ...]]]
-  type: string; // "Polygon" (Enforced in validation)
+export type Volume = {
+  labelLocation: [number, number];
+  ownership: Ownership;
+  geojson: Geojson;
 };
 
-// import type { LatLngExpression } from "leaflet";
-
-// export type GeoJSON = {
-//   type: string;
-//   features: {
-//     type: string;
-//     geometry: {
-//       type: string;
-//       coordinates: LatLngExpression[];
-//     };
-//     properties: unknown;
-//   }[];
-// };
+export type Sectors = {
+  [sectorId: string]: string;
+};
