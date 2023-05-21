@@ -7,6 +7,9 @@ import {
 } from "~/server/api/trpc";
 import { syncFacilityData } from "~/utils/facilityData/server/syncFacilityData";
 
+import fs from "fs/promises";
+import path from "path";
+
 export const facilityDataRouter = createTRPCRouter({
   getFIRsWithSectors: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.fIR.findMany({
@@ -32,6 +35,13 @@ export const facilityDataRouter = createTRPCRouter({
 
   getAllSector: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.sector.findMany();
+  }),
+
+  getFacilityDataFilenames: publicProcedure.query(({ ctx }) => {
+    const directoryPath = path.join(process.cwd(), "public", "facilityData");
+    // List all files in the directory
+    const files = fs.readdir(directoryPath);
+    return files;
   }),
 
   syncFacilityData: protectedProcedure.mutation(({ ctx }) => {

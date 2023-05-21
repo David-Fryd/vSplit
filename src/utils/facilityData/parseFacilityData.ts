@@ -10,7 +10,10 @@ import type {
 
 function isFacilityData(data: unknown): data is FacilityData {
   if (typeof data !== "object" || data === null) {
-    throw new Error("Invalid FacilityData: data should be an object");
+    throw new Error(
+      "Invalid FacilityData: data should be an object. Instead, was " +
+        typeof data
+    );
   }
 
   const dataObject = data as { [k: string]: unknown };
@@ -169,6 +172,14 @@ function isGeometry(
 }
 
 export function parseFacilityData(data: unknown): FacilityData {
+  // If data is a string, attempt to convert it into a JSON object
+  if (typeof data === "string") {
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      throw new Error("Data provided is not a valid JSON string");
+    }
+  }
   if (!isFacilityData(data)) {
     throw new Error("Data provided is not a valid FacilityData");
   }
