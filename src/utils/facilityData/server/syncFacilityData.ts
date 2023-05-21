@@ -36,8 +36,6 @@ export async function syncFacilityData({
   // firName -> file name it was seen in (for error message purposes)
   const seenFirNames: { [key: string]: string } = {};
 
-  const parsedData: FacilityData[] = [];
-
   // In the future we could improve this structure to be more granular in the types of info it returns
   // i.e. returnMessage.firs[0] = {firName: "ZMA", syncMessages: ["Sector 46 was added to DB","..."]}
   const returnMessage: SyncFacilityDataReturn = {
@@ -85,27 +83,8 @@ export async function syncFacilityData({
           firName: fir.firName,
           syncMessages: ["FIR created in database"],
         });
-
-        // for (const sectorIDFile of Object.keys(facilityDataFromFile.sectors)) {
-        //   // Create the sector in the database
-        //   const sectorLabel = facilityDataFromFile.sectors[sectorIDFile];
-        //   assert(sectorLabel !== undefined);
-        //   const sector = await ctx.prisma.sector.create({
-        //     data: {
-        //       sectorID: sectorIDFile,
-        //       sectorLabel: sectorLabel,
-        //       firName: facilityDataFromFile.fir.firName,
-        //       notes: "",
-        //     },
-        //   });
-        //   const currFirIndex = returnMessage.firs.length - 1;
-        //   returnMessage.firs[currFirIndex]?.syncMessages.push(
-        //     `Sector ${sector.sectorID} ${sector.sectorLabel} created in database`
-        //   );
-        // }
       }
 
-      // TODO: Prevent duplicate sector IDs in the same FIR
       // UPDATE SECTORS
       for (const sectorIDFile of Object.keys(facilityDataFromFile.sectors)) {
         const sectorLabel = facilityDataFromFile.sectors[sectorIDFile];
@@ -170,24 +149,32 @@ export async function syncFacilityData({
             );
           }
         }
-
-        // const sector = await ctx.prisma.sector.upsert({
-        //   where: {
-        //     uniqueSectorID: sectorFromDB?.uniqueSectorID,
-        //   },
-        //   update: {
-        //     sectorLabel: facilityDataFromFile.sectors[sectorIDFile],
-        //   },
-        //   create: {
-        //     sectorID: sectorIDFile,
-        //     sectorLabel: sectorLabel,
-        //     firName: facilityDataFromFile.fir.firName,
-        //     notes: "",
-        //   },
-        // });
       }
 
-      // TODO: Remove sectors that are in the DB but not in the file
+      // Remove sectors that are in the DB but not in the file
+      const sectorIDsFromFile = Object.keys(facilityDataFromFile.sectors);
+      const sectorsFromDB = facilityDataFromDB?.sectors || [];
+
+      for (const sectorFromDB of sectorsFromDB) {
+        if (!sectorIDsFromFile.includes(sectorFromDB.sectorID)) {
+          await ctx.prisma.sector.delete({
+            where: {
+              uniqueSectorID: sectorFromDB.uniqueSectorID,
+            },
+          });
+          if (returnMessage.firs.length == 0) {
+            returnMessage.firs.push({
+              firName: facilityDataFromFile.fir.firName,
+              syncMessages: [],
+            });
+          }
+
+          const currFirIndex = returnMessage.firs.length - 1;
+          returnMessage.firs[currFirIndex].syncMessages.push(
+            `Sector ${sectorFromDB.sectorID} ${sectorFromDB.sectorLabel} removed from database`
+          );
+        }
+      }
 
       // console.log("facilityDataFromDB", facilityDataFromDB?.sectors);
       // console.log("facilityDataFromFile", facilityDataFromFile.sectors);
