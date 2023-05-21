@@ -30,6 +30,11 @@ for feature in data['features']:
     # Compute the centroid of the bounding box for the feature
     labelLocation = compute_centroid(feature['geometry']['coordinates'][0])
 
+    # ensure the 'properties' field exists on feature
+    if 'properties' not in feature:
+        feature['properties'] = {}
+        print("WARNING: Feature missing 'properties' field, each shape should have the properties field as defined by the helper script to assign ownership to the volume.")
+
     # Parse the 'properties' object into the 'ownership' format
     ownership = parse_ownership(feature['properties'])
     
