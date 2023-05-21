@@ -12,7 +12,8 @@ import { LatLngBounds } from "leaflet";
 import { api } from "../utils/api";
 import type { GeoJSON } from "leaflet";
 import { parseFacilityData } from "~/utils/facilityData/parseFacilityData";
-import { FacilityData } from "~/types/facilityData";
+import type { FacilityData } from "~/types/facilityData";
+import { renderPolygons } from "~/utils/mapDisplay/renderPolygons";
 
 // const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
@@ -76,6 +77,7 @@ const MainMap = () => {
         {/* {allFacilityData?.map((facility) => {
           return renderPolygons(facility.features);
         })} */}
+        {allFacilityData && renderPolygons(allFacilityData, [])}
       </MapContainer>
     </div>
   );
