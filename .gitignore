@@ -24,6 +24,9 @@ next-env.d.ts
 .DS_Store
 *.pem
 
+# dev
+**/MainMap_old.tsx
+
 # debug
 npm-debug.log*
 yarn-debug.log*
