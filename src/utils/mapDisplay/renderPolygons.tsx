@@ -33,10 +33,15 @@ export const renderPolygons = (
         <Polygon
           key={`polygon-${i}-${j}`}
           positions={positions}
-          color="blue"
+          color="green"
           fillOpacity={0.5}
         >
-          <Tooltip>{`Volume ${j} of ${facilityData.fir.firName}`}</Tooltip>
+          <Tooltip className="myCSSClass">
+            <div className=" border-2 border-white bg-neutral-700 p-2 text-white">
+              <p className="text-md font-bold">{`Test Text`}</p>
+              {`Volume ${j} of ${facilityData.fir.firName}`}
+            </div>
+          </Tooltip>
         </Polygon>
       );
     });
