@@ -20,15 +20,6 @@ const Sync: NextPage = () => {
       sessionData?.user.email == "admin_email_todo_get_from_env" ? (
         <>
           {/* Button that triggers the sync */}
-          {!syncMutation.data && (
-            <button
-              className="rounded-xl  border-2 border-white bg-neutral-500 p-2"
-              onClick={handleSync}
-              disabled={syncMutation.isLoading}
-            >
-              Sync Database
-            </button>
-          )}
           <button
             className="rounded-xl  border-2 border-white bg-neutral-500 p-2"
             onClick={handleSync}
