@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 
 const NavLink = ({ href, children }: { href: string; children: ReactNode }) => {
   return (
@@ -57,7 +58,7 @@ const QuickloadFlyout = () => {
   );
 };
 
-const SignInOutButton = ({ sessionData }: { sessionData: any }) => {
+const SignInOutButton = ({ sessionData }: { sessionData: Session | null }) => {
   return (
     <div className="m-0.5 flex h-12 items-center justify-center border-4 border-red-400 text-center text-lg ">
       <button
