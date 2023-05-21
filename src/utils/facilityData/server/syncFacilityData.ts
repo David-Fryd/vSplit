@@ -169,7 +169,7 @@ export async function syncFacilityData({
               },
             });
 
-            returnMessage.firs[currFirIndex].syncMessages.push(
+            returnMessage.firs[currFirIndex]?.syncMessages.push(
               `Sector ${sector.sectorID} label updated from '${OldLabel}' to '${sector.sectorLabel}'`
             );
           }
@@ -195,7 +195,7 @@ export async function syncFacilityData({
           }
 
           const currFirIndex = returnMessage.firs.length - 1;
-          returnMessage.firs[currFirIndex].syncMessages.push(
+          returnMessage.firs[currFirIndex]?.syncMessages.push(
             `Sector ${sectorFromDB.sectorID} ${sectorFromDB.sectorLabel} removed from database`
           );
         }
