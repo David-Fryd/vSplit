@@ -82,7 +82,6 @@ model FIR {
   id                        Int      @id @default(autoincrement())
   firName                   String   @unique // "ZMA"
   firLabel                  String // "Miami ARTCC"
-  facilityDataFileName      String // "zmaSectors.json"
   sectors                   Sector[] @relation("FIRtoSectors")
   groups                    Group[]  @relation("FIRtoGroups")
 }
