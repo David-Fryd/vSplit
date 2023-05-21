@@ -64,6 +64,9 @@ model Group {
   /// Frequency that this group of sectors is controlled on
   groupFrequency String
 
+  /// Color that this group of sectors should be displayed in
+  groupColor String
+
   sectors Sector[] @relation("GroupToSectors")
 
   /// Notes or remarks about a given group
