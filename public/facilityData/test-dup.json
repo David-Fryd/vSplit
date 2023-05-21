@@ -1,7 +1,7 @@
 {
   "fir": {
-    "firName": "ZMA",
-    "firLabel": "Miami ARTCC"
+    "firName": "TEST",
+    "firLabel": "TEST ARTCC"
   },
   "sectors": {
     "06": "SECTOR_06_LABEL",
