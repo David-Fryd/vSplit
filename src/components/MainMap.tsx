@@ -21,12 +21,14 @@ const MainMap = () => {
   // TODO: Implement, and inform how groups are drawn etc...
   // const groups = api.facilitydata.getFIRsWithGroups.useQuery();
 
-  const [allFacilityData, setAllFacilityData] =
-    React.useState<FacilityData[]>();
+  const [allFacilityData, setAllFacilityData] = React.useState<FacilityData[]>(
+    []
+  );
+  const filesInPublicFolder =
+    api.facilitydata.getFacilityDataFilenames.useQuery();
 
   const fetchFacilityData = async () => {
-    const filesInPublicFolder =
-      api.facilitydata.getFacilityDataFilenames.useQuery();
+    const facilityDataArray: FacilityData[] = [];
     for (const file of filesInPublicFolder.data ?? []) {
       console.log("getting facility data from file:", file);
       const response = await fetch(`/facilityData/${file}`);
@@ -34,8 +36,7 @@ const MainMap = () => {
         const rawData = await response.text();
         const facilityData = parseFacilityData(rawData);
         console.log("GOT FACILITY DATA:", facilityData);
-
-        // return facilityData;
+        facilityDataArray.push(facilityData);
       } else {
         console.error(
           `Failed to fetch facility data from ${file}: ${response.statusText}`
@@ -43,11 +44,20 @@ const MainMap = () => {
         return null;
       }
     }
+    setAllFacilityData(facilityDataArray);
   };
 
-  fetchFacilityData().catch((error) => {
-    console.error("Error fetching facility data", error);
-  });
+  // Fetch facility data when component is mounted
+  React.useEffect(() => {
+    if (filesInPublicFolder.data) {
+      fetchFacilityData().catch((error) => {
+        console.error("Error fetching facility data", error);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filesInPublicFolder.data]);
+
+  console.log("allFacilityData", allFacilityData);
 
   return (
     <div className="h-full w-full">
