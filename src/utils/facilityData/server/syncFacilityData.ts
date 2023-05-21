@@ -84,6 +84,8 @@ export async function syncFacilityData({
           syncMessages: ["FIR created in database"],
         });
       }
+      // TODO: Remove Unused FIRs from DB (currently this is done manually for safety, and we just are careful about
+      // allowing pull requests with FIR names that shouldn't change often...)
 
       // UPDATE SECTORS
       for (const sectorIDFile of Object.keys(facilityDataFromFile.sectors)) {
