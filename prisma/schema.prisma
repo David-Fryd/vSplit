@@ -79,11 +79,11 @@ model Group {
 
 /// Flight Information Region
 model FIR {
-  id                        Int      @id @default(autoincrement())
-  firName                   String   @unique // "ZMA"
-  firLabel                  String // "Miami ARTCC"
-  sectors                   Sector[] @relation("FIRtoSectors")
-  groups                    Group[]  @relation("FIRtoGroups")
+  id       Int      @id @default(autoincrement())
+  firName  String   @unique // "ZMA"
+  firLabel String // "Miami ARTCC"
+  sectors  Sector[] @relation("FIRtoSectors")
+  groups   Group[]  @relation("FIRtoGroups")
 }
 
 // model Example {
