@@ -30,6 +30,7 @@ const MainMap = () => {
   const [loadingText, setLoadingText] = React.useState<string>(
     "Loading facility data files"
   );
+  const [errorText, setErrorText] = React.useState<string | null>(null);
 
   const filesInPublicFolder =
     api.facilitydata.getFacilityDataFilenames.useQuery();
@@ -53,6 +54,10 @@ const MainMap = () => {
         return null;
       }
     }
+    // if (filesInPublicFolder.error.data) {
+    //   setErrorText(`Could not load files from public folder`);
+    //   console.log(`setting error text to ${errorText ? errorText : ""}`);
+    // }
     setAllFacilityData(facilityDataArray);
     setLoading(false);
     setLoadingText("");

@@ -48,4 +48,26 @@ export const facilityDataRouter = createTRPCRouter({
     console.log("sync facility data endpoint called");
     return syncFacilityData({ ctx });
   }),
+
+  // getGroupsFromFIR: publicProcedure
+  //   .input(z.object({ fir: z.string() }))
+  //   .query(({ input, ctx }) => {
+  //     return ctx.prisma.sector.findMany({
+  //       where: {
+  //         firName: input.fir,
+  //       },
+  //     });
+  //   }),
+
+  getFIRsWithGroups: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.fIR.findMany({
+      include: {
+        sectors: {
+          include: {
+            group: true,
+          },
+        },
+      },
+    });
+  }),
 });

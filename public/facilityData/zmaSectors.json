@@ -4,6 +4,7 @@
     "firLabel": "Miami ARTCC"
   },
   "sectors": {
+    "05": "SECTOR_05_LABEL",
     "06": "SECTOR_06_LABEL",
     "08": "SECTOR_08_LABEL",
     "19": "SECTOR_19_LABEL",

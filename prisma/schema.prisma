@@ -47,10 +47,12 @@ model Sector {
   fir     FIR    @relation("FIRtoSectors", fields: [firName], references: [firName], onDelete: Cascade)
 
   /// The Group the Sector belongs to, if any
-  group Group? @relation("GroupToSectors", fields: [uniqueSectorID], references: [uniqueGroupID])
+  belongsToUniqueGroupID Int?
+  group                  Group? @relation("GroupToSectors", fields: [belongsToUniqueGroupID], references: [uniqueGroupID])
 
   @@index([firName])
   @@index([uniqueSectorID])
+  @@index([belongsToUniqueGroupID])
 }
 
 model Group {
