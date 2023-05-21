@@ -84,7 +84,30 @@ export async function syncFacilityData({
           syncMessages: ["FIR created in database"],
         });
       }
-      // TODO: Remove Unused FIRs from DB (currently this is done manually for safety, and we just are careful about
+      // Sync FIR Label
+      else if (
+        facilityDataFromDB.firLabel !== facilityDataFromFile.fir.firLabel
+      ) {
+        console.log(
+          `FIR ${facilityDataFromFile.fir.firName} label changed from ${facilityDataFromDB.firLabel} to ${facilityDataFromFile.fir.firLabel}`
+        );
+        const fir = await ctx.prisma.fIR.update({
+          where: {
+            firName: facilityDataFromFile.fir.firName,
+          },
+          data: {
+            firLabel: facilityDataFromFile.fir.firLabel,
+          },
+        });
+        returnMessage.firs.push({
+          firName: fir.firName,
+          syncMessages: [
+            `FIR label changed from ${facilityDataFromDB.firLabel} to ${facilityDataFromFile.fir.firLabel}`,
+          ],
+        });
+      }
+
+      // NOTE: Remove Unused FIRs from DB (currently this is done manually for safety, and we just are careful about
       // allowing pull requests with FIR names that shouldn't change often...)
 
       // UPDATE SECTORS
