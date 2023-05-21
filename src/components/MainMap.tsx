@@ -14,6 +14,7 @@ import type { GeoJSON } from "leaflet";
 import { parseFacilityData } from "~/utils/facilityData/parseFacilityData";
 import type { FacilityData } from "~/types/facilityData";
 import { renderPolygons } from "~/utils/mapDisplay/renderPolygons";
+import LoadingIcon from "./LoadingIcon";
 
 // const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
@@ -25,6 +26,8 @@ const MainMap = () => {
   const [allFacilityData, setAllFacilityData] = React.useState<FacilityData[]>(
     []
   );
+  const [loading, setLoading] = React.useState<boolean>(true);
+
   const filesInPublicFolder =
     api.facilitydata.getFacilityDataFilenames.useQuery();
 
@@ -46,6 +49,7 @@ const MainMap = () => {
       }
     }
     setAllFacilityData(facilityDataArray);
+    setLoading(false);
   };
 
   // Fetch facility data when component is mounted
@@ -61,7 +65,7 @@ const MainMap = () => {
   console.log("allFacilityData", allFacilityData);
 
   return (
-    <div className="h-full w-full">
+    <div className="relative h-full w-full">
       <MapContainer
         center={[35.8283, -98.5795]}
         zoom={5}
@@ -74,11 +78,15 @@ const MainMap = () => {
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_nolabels/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
-        {/* {allFacilityData?.map((facility) => {
-          return renderPolygons(facility.features);
-        })} */}
+
         {allFacilityData && renderPolygons(allFacilityData, [])}
       </MapContainer>
+      {loading && (
+        <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-neutral-900 bg-opacity-50">
+          <div className="text-2xl text-white">Loading Facility Data...</div>
+          <LoadingIcon />
+        </div>
+      )}
     </div>
   );
 };
