@@ -27,6 +27,9 @@ const MainMap = () => {
     []
   );
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [loadingText, setLoadingText] = React.useState<string>(
+    "Loading facility data files"
+  );
 
   const filesInPublicFolder =
     api.facilitydata.getFacilityDataFilenames.useQuery();
@@ -35,12 +38,14 @@ const MainMap = () => {
     const facilityDataArray: FacilityData[] = [];
     for (const file of filesInPublicFolder.data ?? []) {
       console.log("getting facility data from file:", file);
+      setLoadingText(`Loading facility data from ${file}`);
       const response = await fetch(`/facilityData/${file}`);
       if (response.ok) {
         const rawData = await response.text();
         const facilityData = parseFacilityData(rawData);
         console.log("GOT FACILITY DATA:", facilityData);
         facilityDataArray.push(facilityData);
+        setLoadingText(`Loaded ${facilityData.fir.firName} facility data`);
       } else {
         console.error(
           `Failed to fetch facility data from ${file}: ${response.statusText}`
@@ -50,6 +55,7 @@ const MainMap = () => {
     }
     setAllFacilityData(facilityDataArray);
     setLoading(false);
+    setLoadingText("");
   };
 
   // Fetch facility data when component is mounted
@@ -87,6 +93,7 @@ const MainMap = () => {
               Loading Facility Data...
             </div>
             <LoadingIcon />
+            <p className="text-md pt-2 text-white">{loadingText}</p>
           </div>
         )}
       </MapContainer>
