@@ -45,8 +45,9 @@ const calculateBounds = (
 };
 
 export type GroupInfo = {
-  groupName: string | "NO_GROUP_ASSIGNED";
+  groupName: string | null;
   groupColor: string;
+  groupFrequency: string | null;
 };
 
 function parseAltitudeRange(altRange: AltitudeRange): string {
@@ -61,9 +62,7 @@ type SectorDisplayInfo = {
   sectorID: string;
   sectorLabel: string;
   altitudeRange: AltitudeRange | undefined;
-  groupName: string | null;
-  groupColor: string;
-};
+} & GroupInfo;
 type DisplayInfo = {
   [sectorID: string]: SectorDisplayInfo[];
 };
@@ -85,7 +84,7 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
         // pointerEvents: none so that tooltip doesn't dissapear for the polygon when blocked by the background of this div
       >
         {Object.entries(displayInfo).flatMap(([sectorID, displayInfos]) =>
-          displayInfos.map((displayInfo) => (
+          displayInfos.map((displayInfo: SectorDisplayInfo) => (
             <div
               className=" -mt-1.5 flex"
               key={displayInfo.sectorID}
@@ -157,7 +156,8 @@ export const renderPolygons = (
           groupName: sector.group ? sector.group.groupName : null,
           // TODO: This shouldn't be necessary!! vvv
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          groupColor: sector.group ? sector.group.groupColor : "#aaa",
+          groupColor: sector.group ? sector.group.groupColor : "#555",
+          groupFrequency: sector.group ? sector.group.groupFrequency : null,
         };
 
         if (displayInfo[key]) {
@@ -187,6 +187,7 @@ export const renderPolygons = (
                 ? sectorInfo.groupName
                 : "NO_GROUP_ASSIGNED",
               groupColor: sectorInfo.groupColor,
+              groupFrequency: sectorInfo.groupFrequency,
             });
           }
         });
@@ -221,7 +222,6 @@ export const renderPolygons = (
         html: renderToString(
           <DisplayInfoComponent displayInfo={displayInfo} />
         ),
-        // Add more options here, if needed
       });
 
       return (
@@ -247,11 +247,39 @@ export const renderPolygons = (
               },
             }}
           >
-            <Tooltip className="myCSSClass">
-              <div className=" border-2 border-white bg-neutral-700 p-2 text-white">
+            <Tooltip className="myCSSClass" opacity={1}>
+              <div className=" flex flex-col border-2  border-white bg-neutral-800 p-2 text-white">
                 <p className="text-md font-bold">{}</p>
-                <p className="text-md font-bold">{`Test Text`}</p>
-                {`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}
+
+                {Object.entries(displayInfo).flatMap(
+                  ([sectorID, displayInfos]) =>
+                    displayInfos.map((displayInfo: SectorDisplayInfo) => (
+                      <div key={displayInfo.sectorID} className="pb-2">
+                        <p
+                          className="px-1 text-sm font-bold underline"
+                          style={{ color: displayInfo.groupColor }}
+                        >
+                          {displayInfo.groupName || "N/A"} :{" "}
+                          {displayInfo.sectorLabel}
+                        </p>
+                        <p
+                          style={{ color: displayInfo.groupColor }}
+                          className=""
+                        >
+                          ALTS:{" "}
+                          <b>
+                            {displayInfo.altitudeRange
+                              ? parseAltitudeRange(displayInfo.altitudeRange)
+                              : "N/A"}
+                          </b>
+                        </p>
+                        <p style={{ color: displayInfo.groupColor }}>
+                          FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
+                        </p>
+                      </div>
+                    ))
+                )}
+                <span className="mt-2 border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}</span>
               </div>
             </Tooltip>
           </Polygon>
