@@ -78,7 +78,7 @@ const MainMap = () => {
   return (
     <div className="relative h-full w-full">
       <MapContainer
-        center={[35.8283, -98.5795]}
+        center={[25.8, -78.5]}
         zoom={5}
         zoomSnap={0.5}
         style={{ height: "100%", width: "100%", backgroundColor: "#222" }}
