@@ -257,13 +257,13 @@ export const renderPolygons = (
                 {Object.entries(displayInfo).flatMap(
                   ([sectorID, displayInfos]) =>
                     displayInfos.map((displayInfo: SectorDisplayInfo) => (
-                      <div key={displayInfo.sectorID} className="pb-2">
+                      <div key={displayInfo.sectorID} className="px-1 pb-2">
                         <p
-                          className="px-1 text-sm font-bold underline"
+                          className=" text-sm font-bold underline"
                           style={{ color: displayInfo.groupColor }}
                         >
                           {displayInfo.groupName || "N/A"} :{" "}
-                          {displayInfo.sectorLabel}
+                          {displayInfo.sectorLabel} ({displayInfo.sectorID})
                         </p>
                         <p
                           style={{ color: displayInfo.groupColor }}
