@@ -4,13 +4,13 @@
     "firLabel": "Miami Oceanic"
   },
   "sectors": {
-    "43": "SECTOR_43_LABEL",
-    "58": "SECTOR_58_LABEL",
-    "59": "SECTOR_59_LABEL",
-    "60": "SECTOR_60_LABEL",
-    "61": "SECTOR_61_LABEL",
-    "62": "SECTOR_62_LABEL",
-    "63": "SECTOR_63_LABEL"
+    "43": "ZIN",
+    "58": "DUKKY",
+    "59": "ABACO",
+    "60": "YEG",
+    "61": "ZQA",
+    "62": "GTK",
+    "63": "TOOMS"
   },
   "volumes": [
     {
