@@ -1,4 +1,4 @@
-import { Polygon, Polyline, Tooltip, SVGOverlay } from "react-leaflet";
+import { Polygon, Polyline, Tooltip, SVGOverlay, Marker } from "react-leaflet";
 import type { AltitudeRange, FacilityData, Volume } from "~/types/facilityData";
 import type {
   LatLngExpression,
@@ -10,6 +10,7 @@ import { api } from "../api";
 import assert from "assert";
 import { averageHexFromGroupcolors } from "./colorUtils";
 import L from "leaflet";
+import { renderToString } from "react-dom/server";
 
 const coordinatesToLatLngExpression = (
   coordinates: number[][][]
@@ -56,6 +57,52 @@ function parseAltitudeRange(altRange: AltitudeRange): string {
   }
 }
 
+type SectorDisplayInfo = {
+  sectorID: string;
+  sectorLabel: string;
+  altitudeRange: AltitudeRange | undefined;
+  groupName: string | null;
+  groupColor: string;
+};
+type DisplayInfo = {
+  [sectorID: string]: SectorDisplayInfo[];
+};
+
+function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
+  return (
+    <div>
+      {/* Red marker is approx the center of where this is rendered */}
+      {/* <div className="absolute h-1 w-1 bg-red-500"></div> */}
+      <div
+        className=" flex flex-col gap-y-0 whitespace-nowrap font-mono"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        }}
+        // pointerEvents: none so that tooltip doesn't dissapear for the polygon when blocked by the background of this div
+      >
+        {Object.entries(displayInfo).flatMap(([sectorID, displayInfos]) =>
+          displayInfos.map((displayInfo) => (
+            <div
+              className=" -mt-1.5 flex"
+              key={displayInfo.sectorID}
+              style={{ color: displayInfo.groupColor }}
+            >
+              {displayInfo.groupName || "N/A"}:{" "}
+              {displayInfo.altitudeRange
+                ? parseAltitudeRange(displayInfo.altitudeRange)
+                : "N/A"}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export const renderPolygons = (
   allFacilityData: FacilityData[],
   allGroupData: unknown[]
@@ -79,17 +126,6 @@ export const renderPolygons = (
         // Or maybe just render the default white polygons?
         //TODO ^^^
       }
-
-      type SectorDisplayInfo = {
-        sectorID: string;
-        sectorLabel: string;
-        altitudeRange: AltitudeRange | undefined;
-        groupName: string | null;
-        groupColor: string;
-      };
-      type DisplayInfo = {
-        [sectorID: string]: SectorDisplayInfo[];
-      };
 
       const displayInfo: DisplayInfo = {};
 
@@ -180,8 +216,20 @@ export const renderPolygons = (
       // const fillColor = uniqueGroupsInfo[0]?.groupColor;
       const fillColor = combinedGroupColor;
 
+      const icon = L.divIcon({
+        className: "my-div-icon",
+        html: renderToString(
+          <DisplayInfoComponent displayInfo={displayInfo} />
+        ),
+        // Add more options here, if needed
+      });
+
       return (
         <div key={`polygon-${i}-${j}`}>
+          <Marker
+            position={[volume.labelLocation[1], volume.labelLocation[0]]}
+            icon={icon}
+          />
           <Polygon
             className="custom-shape"
             positions={positions}
@@ -207,45 +255,6 @@ export const renderPolygons = (
               </div>
             </Tooltip>
           </Polygon>
-          {/* TODO add additional transparent polygons with dasharray/dashoffset of different colors to indicate combined sectors */}
-          <SVGOverlay bounds={bounds}>
-            <text
-              x="50%"
-              y="50%"
-              className=""
-              textAnchor="middle"
-              dominantBaseline="central"
-              stroke=""
-            >
-              {/* Instead of what we have below, use displayInfo to map */}
-              {Object.entries(displayInfo).flatMap(
-                ([sectorID, displayInfos], idx, arr) =>
-                  displayInfos.map((displayInfo, idx2) => (
-                    <tspan
-                      className=" font-mono font-bold"
-                      style={{
-                        fill: displayInfo.groupColor,
-                      }}
-                      key={sectorID}
-                      x="50%"
-                      dy={
-                        idx === 0 && idx2 === 0
-                          ? arr.length === 1
-                            ? "0em"
-                            : `${-0.5 * arr.length}em`
-                          : "1em"
-                      }
-                    >
-                      {`${displayInfo.groupName || "N/A"}: ${
-                        displayInfo.altitudeRange
-                          ? parseAltitudeRange(displayInfo.altitudeRange)
-                          : "N/A"
-                      }`}
-                    </tspan>
-                  ))
-              )}
-            </text>
-          </SVGOverlay>
         </div>
       );
     });
