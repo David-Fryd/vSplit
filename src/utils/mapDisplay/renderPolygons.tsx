@@ -1,4 +1,4 @@
-import { Polygon, Tooltip, SVGOverlay } from "react-leaflet";
+import { Polygon, Polyline, Tooltip, SVGOverlay } from "react-leaflet";
 import type { AltitudeRange, FacilityData, Volume } from "~/types/facilityData";
 import type {
   LatLngExpression,
@@ -8,6 +8,8 @@ import type {
 import "leaflet/dist/leaflet.css";
 import { api } from "../api";
 import assert from "assert";
+import { averageHexFromGroupcolors } from "./colorUtils";
+import L from "leaflet";
 
 const coordinatesToLatLngExpression = (
   coordinates: number[][][]
@@ -40,6 +42,19 @@ const calculateBounds = (
     [maxLat, maxLng],
   ];
 };
+
+export type GroupInfo = {
+  groupName: string | "NO_GROUP_ASSIGNED";
+  groupColor: string;
+};
+
+function parseAltitudeRange(altRange: AltitudeRange): string {
+  if (altRange[0] === 0 && altRange[1] === 999) {
+    return "ALL";
+  } else {
+    return `${altRange[0]}-${altRange[1]}`;
+  }
+}
 
 export const renderPolygons = (
   allFacilityData: FacilityData[],
@@ -121,10 +136,7 @@ export const renderPolygons = (
       }
 
       // Number of unique groups for a given volume w/ will determine the color/dashing of the polygon/boundaries
-      const uniqueGroupsInfo: {
-        groupName: string | "NO_GROUP_ASSIGNED";
-        groupColor: string;
-      }[] = [];
+      const uniqueGroupsInfo: GroupInfo[] = [];
       for (const [key, value] of Object.entries(displayInfo)) {
         console.log("examining key for unique groups: ", key);
 
@@ -143,6 +155,13 @@ export const renderPolygons = (
           }
         });
       }
+      const fillOpacity = 0.2;
+      // Used to color in the polygon based on the controlling groups
+      // Iterate through each of the unique groups and average their groupColor's together
+      const combinedGroupColor =
+        averageHexFromGroupcolors(
+          uniqueGroupsInfo
+        ); /* TODO - Combine hex values as if they were overlaid transparently on one another */
 
       if (uniqueGroupsInfo.length !== 0) {
         console.log(
@@ -158,63 +177,73 @@ export const renderPolygons = (
 
       const bounds = calculateBounds(positions);
 
-      const fillColor = uniqueGroupsInfo[0]?.groupColor;
+      // const fillColor = uniqueGroupsInfo[0]?.groupColor;
+      const fillColor = combinedGroupColor;
 
       return (
         <div key={`polygon-${i}-${j}`}>
           <Polygon
+            className="custom-shape"
             positions={positions}
             color={fillColor}
-            fillOpacity={0.1}
+            fillOpacity={fillOpacity}
             pathOptions={{
-              // color: "red",
+              color: fillColor,
               weight: 1,
-              dashArray: "5, 5",
-              dashOffset: "0",
+              opacity: 0.7,
+            }}
+            eventHandlers={{
+              click: (event) => {
+                L.DomEvent.stop(event);
+                console.log("clicked");
+              },
             }}
           >
             <Tooltip className="myCSSClass">
               <div className=" border-2 border-white bg-neutral-700 p-2 text-white">
+                <p className="text-md font-bold">{}</p>
                 <p className="text-md font-bold">{`Test Text`}</p>
                 {`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}
               </div>
             </Tooltip>
           </Polygon>
-          {/* TODO add additional transparent polygons with dasharray/dashoffset of differnent colors to indicate combined sectors */}
+          {/* TODO add additional transparent polygons with dasharray/dashoffset of different colors to indicate combined sectors */}
           <SVGOverlay bounds={bounds}>
-            <text x="50%" y="50%" className="flex flex-col" stroke="">
+            <text
+              x="50%"
+              y="50%"
+              className=""
+              textAnchor="middle"
+              dominantBaseline="central"
+              stroke=""
+            >
               {/* Instead of what we have below, use displayInfo to map */}
-              {Object.entries(displayInfo).map(([sectorID, displayInfos]) =>
-                displayInfos.map((displayInfo) => (
-                  <tspan
-                    className="font-mono font-bold"
-                    style={{ fill: displayInfo.groupColor }}
-                    key={sectorID}
-                    x="50%"
-                    dy="1.3em"
-                  >
-                    {`${displayInfo.groupName || "N/A"}: ${
-                      displayInfo.altitudeRange
-                        ? `${displayInfo.altitudeRange[0]}-${displayInfo.altitudeRange[1]}`
-                        : "N/A"
-                    }`}
-                  </tspan>
-                ))
+              {Object.entries(displayInfo).flatMap(
+                ([sectorID, displayInfos], idx, arr) =>
+                  displayInfos.map((displayInfo, idx2) => (
+                    <tspan
+                      className=" font-mono font-bold"
+                      style={{
+                        fill: displayInfo.groupColor,
+                      }}
+                      key={sectorID}
+                      x="50%"
+                      dy={
+                        idx === 0 && idx2 === 0
+                          ? arr.length === 1
+                            ? "0em"
+                            : `${-0.5 * arr.length}em`
+                          : "1em"
+                      }
+                    >
+                      {`${displayInfo.groupName || "N/A"}: ${
+                        displayInfo.altitudeRange
+                          ? parseAltitudeRange(displayInfo.altitudeRange)
+                          : "N/A"
+                      }`}
+                    </tspan>
+                  ))
               )}
-              {/* {Object.entries(volume.ownership).map(([key, value]) => (
-                <tspan
-                  className="fill-white font-mono font-bold"
-                  key={key}
-                  x="50%"
-                  dy="1.3em"
-                >
-                  
-                  Currently just shows first layer of ownership for a given sector assignment. 
-                  TODO: Show other layers of of ownership for a given sector owner, if applicable 
-                  
-                  {key}: {value[0] ? `${value[0][0]}-${value[0][1]}` : "N/A"}
-                </tspan>
-              ))} */}
             </text>
           </SVGOverlay>
         </div>
