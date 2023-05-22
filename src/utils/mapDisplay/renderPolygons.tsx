@@ -51,10 +51,13 @@ export type GroupInfo = {
 };
 
 function parseAltitudeRange(altRange: AltitudeRange): string {
-  if (altRange[0] === 0 && altRange[1] === 999) {
+  const start = altRange[0];
+  const end = altRange[1];
+
+  if (start === 0 && end === 999) {
     return "ALL";
   } else {
-    return `${altRange[0]}-${altRange[1]}`;
+    return `${altRange[0].toString().padStart(3, "0")}-${altRange[1]}`;
   }
 }
 
