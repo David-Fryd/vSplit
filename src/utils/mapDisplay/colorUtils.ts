@@ -1,14 +1,17 @@
 import type { GroupInfo } from "./renderPolygons";
 // A utility function to convert hex color to RGB
-const hexToRgb = (hex: string) => {
+const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-    return r + r + g + g + b + b;
-  });
+  hex = hex.replace(
+    shorthandRegex,
+    function (m, r: string, g: string, b: string) {
+      return r + r + g + g + b + b;
+    }
+  );
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 
-  return result
+  return result && result[1] && result[2] && result[3]
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
