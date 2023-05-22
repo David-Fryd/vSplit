@@ -4,17 +4,17 @@
     "firLabel": "Miami ARTCC"
   },
   "sectors": {
-    "05": "SECTOR_05_LABEL",
-    "06": "SECTOR_06_LABEL",
-    "08": "SECTOR_08_LABEL",
-    "19": "SECTOR_19_LABEL",
-    "20": "SECTOR_20_LABEL",
-    "21": "SECTOR_21_LABEL",
-    "23": "SECTOR_23_LABEL",
-    "25": "SECTOR_25_LABEL",
-    "41": "SECTOR_41_LABEL",
-    "42": "SECTOR_42_LABEL",
-    "46": "46 ALUTO"
+    "05": "MTH",
+    "06": "EYW",
+    "08": "CIGAR",
+    "19": "NUCAR",
+    "20": "PBI",
+    "21": "ZFP",
+    "23": "STOOP",
+    "25": "RSW",
+    "41": "JUNUR",
+    "42": "ZBV",
+    "46": "ALUTO"
   },
   "volumes": [
     {
