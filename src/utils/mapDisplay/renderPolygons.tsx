@@ -228,13 +228,13 @@ export const renderPolygons = (
       });
 
       return (
-        <div key={`polygon-${i}-${j}`}>
+        <div key={`polygon-${i}-${j}`} className="">
           <Marker
             position={[volume.labelLocation[1], volume.labelLocation[0]]}
             icon={icon}
           />
           <Polygon
-            className="custom-shape"
+            className="interactivepoly"
             positions={positions}
             color={fillColor}
             fillOpacity={fillOpacity}
@@ -252,18 +252,17 @@ export const renderPolygons = (
           >
             <Tooltip className="myCSSClass" opacity={1}>
               <div className=" flex flex-col border-2  border-white bg-neutral-800 p-2 text-white">
-                <p className="text-md font-bold">{}</p>
-
                 {Object.entries(displayInfo).flatMap(
                   ([sectorID, displayInfos]) =>
                     displayInfos.map((displayInfo: SectorDisplayInfo) => (
                       <div key={displayInfo.sectorID} className="px-1 pb-2">
                         <p
-                          className=" text-sm font-bold underline"
+                          className="font-bold underline"
                           style={{ color: displayInfo.groupColor }}
                         >
                           {displayInfo.groupName || "N/A"} :{" "}
-                          {displayInfo.sectorLabel} ({displayInfo.sectorID})
+                          {displayInfo.sectorLabel}
+                          {/* ({displayInfo.sectorID}) */}
                         </p>
                         <p
                           style={{ color: displayInfo.groupColor }}

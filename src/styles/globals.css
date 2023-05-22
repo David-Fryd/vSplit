@@ -7,13 +7,18 @@
   border: 0px solid #000 !important;
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.4) !important;
   padding: 0px !important;
-  opacity: 1; /* don't touch this because its used to control hiding the tooltip, changing it causes a bad smearing effect*/
+  /* opacity: 1;  don't touch this because its used to control hiding the tooltip, changing it causes a bad smearing effect*/
 }
 .leaflet-tooltip-left.myCSSClass::before {
   border-left-color: white;
 }
 .leaflet-tooltip-right.myCSSClass::before {
   border-right-color: white;
+}
+
+.interactivepoly:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 /*
