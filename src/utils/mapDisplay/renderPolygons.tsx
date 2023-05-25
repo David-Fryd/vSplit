@@ -287,11 +287,12 @@ export const renderPolygons = (
                   .map(({ sectorID, displayInfo }) => (
                     <div key={sectorID} className="px-1 pb-2">
                       <p
-                        className="font-extrabold underline"
+                        className=" font-mono text-lg font-extrabold underline"
                         style={{ color: displayInfo.groupColor }}
                       >
-                        {displayInfo.groupName || "N/A"} :{" "}
-                        {displayInfo.sectorLabel}
+                        {displayInfo.groupName || "N/A"}
+                        {!displayInfo.groupName && " : "}
+                        {!displayInfo.groupName && displayInfo.sectorLabel}
                         {/* ({displayInfo.sectorID}) */}
                       </p>
                       <p style={{ color: displayInfo.groupColor }} className="">
@@ -308,7 +309,7 @@ export const renderPolygons = (
                     </div>
                   ))}
 
-                <span className="mt-2 border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}</span>
+                <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}</span>
               </div>
             </Tooltip>
           </Polygon>
