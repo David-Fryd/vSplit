@@ -96,31 +96,31 @@ const hardcoded_presets: {
       { sectorID: "20", uniqueGroupID: 13 },
     ],
   },
-  {
-    // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
-    name: "Phapple vs Earth",
-    assignments: [
-      //groupName 19 id=9
-      { sectorID: "17", uniqueGroupID: 9 },
-      { sectorID: "18", uniqueGroupID: 9 },
-      { sectorID: "19", uniqueGroupID: 9 },
-      { sectorID: "51", uniqueGroupID: 9 },
-      { sectorID: "58", uniqueGroupID: 9 },
-      { sectorID: "59", uniqueGroupID: 9 },
+  // {
+  //   // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
+  //   name: "Phapple vs Earth",
+  //   assignments: [
+  //     //groupName 19 id=9
+  //     { sectorID: "17", uniqueGroupID: 9 },
+  //     { sectorID: "18", uniqueGroupID: 9 },
+  //     { sectorID: "19", uniqueGroupID: 9 },
+  //     { sectorID: "51", uniqueGroupID: 9 },
+  //     { sectorID: "58", uniqueGroupID: 9 },
+  //     { sectorID: "59", uniqueGroupID: 9 },
 
-      //groupName 12 id=11
-      { sectorID: "12", uniqueGroupID: 11 },
-      { sectorID: "05", uniqueGroupID: 11 },
-      { sectorID: "13", uniqueGroupID: 11 },
-      { sectorID: "37", uniqueGroupID: 11 },
-      { sectorID: "32", uniqueGroupID: 11 },
-      { sectorID: "52", uniqueGroupID: 11 },
-      { sectorID: "20", uniqueGroupID: 11 },
-      { sectorID: "36", uniqueGroupID: 11 },
-      { sectorID: "09", uniqueGroupID: 11 },
-      { sectorID: "54", uniqueGroupID: 11 },
-    ],
-  },
+  //     //groupName 12 id=11
+  //     { sectorID: "12", uniqueGroupID: 11 },
+  //     { sectorID: "05", uniqueGroupID: 11 },
+  //     { sectorID: "13", uniqueGroupID: 11 },
+  //     { sectorID: "37", uniqueGroupID: 11 },
+  //     { sectorID: "32", uniqueGroupID: 11 },
+  //     { sectorID: "52", uniqueGroupID: 11 },
+  //     { sectorID: "20", uniqueGroupID: 11 },
+  //     { sectorID: "36", uniqueGroupID: 11 },
+  //     { sectorID: "09", uniqueGroupID: 11 },
+  //     { sectorID: "54", uniqueGroupID: 11 },
+  //   ],
+  // },
   {
     name: "AllGroup05",
     assignments: [
