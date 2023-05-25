@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { HonorModal } from "~/components/HonorModal";
+import { TempSplitter } from "~/components/TempSplitter";
 
 const SectorConfig: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -25,11 +26,12 @@ const SectorConfig: NextPage = () => {
           </button>
         </div>
       ) : (
-        <>
+        <div>
           {/* {sessionData.user.signedHonorCode ? (} */}
           <HonorModal />
           <p className="text-white">Page WIP</p>
-        </>
+          <TempSplitter firName="ZDC" />
+        </div>
       )}
     </div>
   );
