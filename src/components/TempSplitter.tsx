@@ -5,6 +5,63 @@ import { useState, useEffect } from "react";
 // NOTABLY, WE SHOULD ONLY BE UPDATING SECTORS THAT CHANGED AND NOT ALL OF THEM,
 // BUT THIS IS A QUICK AND DIRTY SOLUTION FOR NOW.
 
+const hardcoded_presets: {
+  name: string;
+  assignments: { sectorID: string; uniqueGroupID: number }[];
+}[] = [
+  {
+    // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
+    name: "Default",
+    assignments: [
+      // groupName 05
+      { sectorID: "15", uniqueGroupID: 13 },
+      { sectorID: "05", uniqueGroupID: 13 },
+      { sectorID: "20", uniqueGroupID: 13 },
+      { sectorID: "32", uniqueGroupID: 13 },
+      { sectorID: "37", uniqueGroupID: 13 },
+      { sectorID: "52", uniqueGroupID: 13 },
+
+      // groupName 36
+      { sectorID: "36", uniqueGroupID: 12 },
+      { sectorID: "09", uniqueGroupID: 12 },
+
+      //groupName 19
+      { sectorID: "18", uniqueGroupID: 9 },
+      { sectorID: "19", uniqueGroupID: 9 },
+      { sectorID: "51", uniqueGroupID: 9 },
+      { sectorID: "58", uniqueGroupID: 9 },
+      { sectorID: "59", uniqueGroupID: 9 },
+
+      //groupName 12
+      { sectorID: "12", uniqueGroupID: 11 },
+      { sectorID: "17", uniqueGroupID: 11 },
+      { sectorID: "54", uniqueGroupID: 11 },
+    ],
+  },
+  {
+    name: "AllGroup05",
+    assignments: [
+      // groupName 05
+      { sectorID: "15", uniqueGroupID: 13 },
+      { sectorID: "05", uniqueGroupID: 13 },
+      { sectorID: "20", uniqueGroupID: 13 },
+      { sectorID: "32", uniqueGroupID: 13 },
+      { sectorID: "37", uniqueGroupID: 13 },
+      { sectorID: "52", uniqueGroupID: 13 },
+      { sectorID: "36", uniqueGroupID: 13 },
+      { sectorID: "09", uniqueGroupID: 13 },
+      { sectorID: "18", uniqueGroupID: 13 },
+      { sectorID: "19", uniqueGroupID: 13 },
+      { sectorID: "51", uniqueGroupID: 13 },
+      { sectorID: "58", uniqueGroupID: 13 },
+      { sectorID: "59", uniqueGroupID: 13 },
+      { sectorID: "12", uniqueGroupID: 13 },
+      { sectorID: "17", uniqueGroupID: 13 },
+      { sectorID: "54", uniqueGroupID: 13 },
+    ],
+  },
+];
+
 export const TempSplitter = ({ firName }: { firName: string }) => {
   const currentAssignments =
     api.facilitydata.getGroupsWithSectorsFromFIR.useQuery({
@@ -51,6 +108,8 @@ export const TempSplitter = ({ firName }: { firName: string }) => {
     }
   }, [currentAssignments.isSuccess, sectorList.isSuccess]);
 
+  console.log("current assignments: ", currentAssignments.data);
+
   const handleUpdate = () => {
     const assignmentsArray = Object.entries(assignments).map(
       ([sectorId, groupId]) => ({
@@ -72,6 +131,32 @@ export const TempSplitter = ({ firName }: { firName: string }) => {
         [sectorId]: Number(event.target.value),
       }));
     };
+
+  const loadPreset = (presetName: string) => {
+    // Find the selected preset
+    const preset = hardcoded_presets.find((p) => p.name === presetName);
+
+    if (preset && sectorList.data) {
+      // Create a lookup object from the preset assignments
+      const presetAssignmentLookup: { [key: string]: number } =
+        preset.assignments.reduce((acc, assignment) => {
+          return {
+            ...acc,
+            [assignment.sectorID]: assignment.uniqueGroupID,
+          };
+        }, {} as { [key: string]: number });
+
+      // Use the lookup object to set the values for assignments
+      setAssignments(
+        sectorList.data.reduce((acc, sector) => {
+          return {
+            ...acc,
+            [sector.sectorID]: presetAssignmentLookup[sector.sectorID] || 0,
+          };
+        }, {} as { [key: string]: number })
+      );
+    }
+  };
 
   return (
     <div className="p-8 text-white">
@@ -107,6 +192,18 @@ export const TempSplitter = ({ firName }: { firName: string }) => {
             </select>
           </div>
         ))}
+        <h1>Load from preset:</h1>
+        <select
+          className="text-black"
+          onChange={(event) => loadPreset(event.target.value)}
+        >
+          <option value="">Select preset</option>
+          {hardcoded_presets.map((preset) => (
+            <option key={preset.name} value={preset.name}>
+              {preset.name}
+            </option>
+          ))}
+        </select>
         <button
           className="border-2 font-bold"
           disabled={updateMutation.isLoading}
