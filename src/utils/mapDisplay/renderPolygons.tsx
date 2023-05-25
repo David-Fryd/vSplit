@@ -294,7 +294,9 @@ export const renderPolygons = (
                 <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
                 <div className="w-40 whitespace-normal text-neutral-300">
                   Sectors:{" "}
-                  {getSectorLabels(volume, currFacilityGrouping).join(", ")}
+                  <span className="italic">
+                    {getSectorLabels(volume, currFacilityGrouping).join(", ")}
+                  </span>
                 </div>
               </div>
             </Tooltip>
