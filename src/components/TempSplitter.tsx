@@ -11,7 +11,7 @@ const hardcoded_presets: {
 }[] = [
   {
     // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
-    name: "Default",
+    name: "NY 4",
     assignments: [
       // groupName 05
       { sectorID: "15", uniqueGroupID: 13 },
@@ -36,6 +36,38 @@ const hardcoded_presets: {
       { sectorID: "12", uniqueGroupID: 11 },
       { sectorID: "17", uniqueGroupID: 11 },
       { sectorID: "54", uniqueGroupID: 11 },
+    ],
+  },
+  {
+    // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
+    name: "NY 3",
+    assignments: [
+      // groupName 05
+      { sectorID: "05", uniqueGroupID: 13 },
+      { sectorID: "15", uniqueGroupID: 13 },
+      { sectorID: "37", uniqueGroupID: 13 },
+      { sectorID: "32", uniqueGroupID: 13 },
+      { sectorID: "52", uniqueGroupID: 13 },
+
+      // groupName 36
+      { sectorID: "36", uniqueGroupID: 12 },
+      { sectorID: "09", uniqueGroupID: 12 },
+      { sectorID: "20", uniqueGroupID: 12 },
+
+      //groupName 19
+      { sectorID: "12", uniqueGroupID: 9 },
+      { sectorID: "17", uniqueGroupID: 9 },
+      { sectorID: "18", uniqueGroupID: 9 },
+      { sectorID: "19", uniqueGroupID: 9 },
+      { sectorID: "51", uniqueGroupID: 9 },
+      { sectorID: "58", uniqueGroupID: 9 },
+      { sectorID: "59", uniqueGroupID: 9 },
+      { sectorID: "54", uniqueGroupID: 9 },
+
+      // //groupName 12 = id11
+      // { sectorID: "12", uniqueGroupID: 11 },
+      // { sectorID: "17", uniqueGroupID: 11 },
+      // { sectorID: "54", uniqueGroupID: 11 },
     ],
   },
   {
