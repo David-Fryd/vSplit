@@ -139,6 +139,7 @@ model User {
   acceptedHonorCode Boolean?  @default(false)
   accounts          Account[]
   sessions          Session[]
+  createdAt         DateTime  @default(now())
 }
 
 model VerificationToken {
