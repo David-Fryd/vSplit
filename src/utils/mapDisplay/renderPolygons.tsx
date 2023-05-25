@@ -292,7 +292,6 @@ export const renderPolygons = (
                         FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
                       </p>
 
-                      {/* displayInfo.altitudeRange[1] display in the top right of the div */}
                       <div
                         className="absolute right-0 top-0 pr-1 font-mono font-bold"
                         style={{ color: displayInfo.groupColor }}
@@ -301,8 +300,6 @@ export const renderPolygons = (
                           ?.toString()
                           .padStart(3, "0") ?? "N/A"}
                       </div>
-
-                      {/* displayInfo.altitudeRange[0] display in the bottom right of the div */}
                       <div
                         className="absolute bottom-0 right-0 pr-1 font-mono font-bold"
                         style={{ color: displayInfo.groupColor }}
@@ -321,7 +318,7 @@ export const renderPolygons = (
                     {getSectorLabels(volume, currFacilityGrouping).join(", ")}
                   </span>
                 </div>
-                <span className="w-40 whitespace-normal  text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
+                <span className="w-40 whitespace-normal text-xs text-neutral-500">{`${facilityData.fir.firName} volume ${j} `}</span>
               </div>
             </Tooltip>
           </Polygon>
