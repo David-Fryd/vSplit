@@ -11,6 +11,7 @@ import assert from "assert";
 import { averageHexFromGroupcolors } from "./colorUtils";
 import L from "leaflet";
 import { renderToString } from "react-dom/server";
+import { Sector } from "@prisma/client";
 
 const coordinatesToLatLngExpression = (
   coordinates: number[][][]
@@ -19,6 +20,14 @@ const coordinatesToLatLngExpression = (
     ring.map((coord) => [coord[1], coord[0]] as LatLngExpression)
   );
 };
+
+function isAltitudeRange(arr: any): arr is AltitudeRange {
+  return (
+    Array.isArray(arr) &&
+    arr.length === 2 &&
+    arr.every((item) => typeof item === "number")
+  );
+}
 
 const calculateBounds = (
   coordinates: LatLngExpression[][]
@@ -93,7 +102,7 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
             style={{ color: displayInfo.groupColor }}
           >
             {displayInfo.groupName || "N/A"}
-            {displayInfo.altitudeRange
+            {isAltitudeRange(displayInfo.altitudeRange)
               ? parseAltitudeRange(displayInfo.altitudeRange) == "ALL"
                 ? ""
                 : ": " + parseAltitudeRange(displayInfo.altitudeRange)
@@ -270,7 +279,7 @@ export const renderPolygons = (
                       <p style={{ color: displayInfo.groupColor }} className="">
                         ALTS:{" "}
                         <b>
-                          {displayInfo.altitudeRange
+                          {isAltitudeRange(displayInfo.altitudeRange)
                             ? parseAltitudeRange(displayInfo.altitudeRange)
                             : "N/A"}
                         </b>
@@ -283,6 +292,10 @@ export const renderPolygons = (
                 )}
 
                 <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
+                <div className="w-40 whitespace-normal text-neutral-300">
+                  Sectors:{" "}
+                  {getSectorLabels(volume, currFacilityGrouping).join(", ")}
+                </div>
               </div>
             </Tooltip>
           </Polygon>
@@ -311,37 +324,57 @@ function combineDisplayInfo(displayInfo: DisplayInfo) {
 
   const combinedDisplayInfo = [];
   for (let i = 0; i < sortedDisplayInfo.length; i++) {
-    let altitudeMin = sortedDisplayInfo[i].displayInfo.altitudeRange?.[0] ?? 0;
-    let altitudeMax = sortedDisplayInfo[i].displayInfo.altitudeRange?.[1] ?? 0;
+    let altitudeMin = sortedDisplayInfo[i]?.displayInfo.altitudeRange?.[0] ?? 0;
+    let altitudeMax = sortedDisplayInfo[i]?.displayInfo.altitudeRange?.[1] ?? 0;
 
     while (
       i < sortedDisplayInfo.length - 1 &&
-      sortedDisplayInfo[i].displayInfo.groupName ===
-        sortedDisplayInfo[i + 1].displayInfo.groupName &&
-      sortedDisplayInfo[i].displayInfo.altitudeRange?.[0] - 10 ===
-        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[1]
+      sortedDisplayInfo[i]?.displayInfo.groupName ===
+        sortedDisplayInfo[i + 1]?.displayInfo.groupName &&
+      (sortedDisplayInfo[i]?.displayInfo.altitudeRange?.[0] ?? 0) - 10 ===
+        sortedDisplayInfo[i + 1]?.displayInfo.altitudeRange?.[1]
     ) {
       // Update the min and max altitude ranges.
       altitudeMin = Math.min(
         altitudeMin,
-        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[0] ?? 0
+        sortedDisplayInfo[i + 1]?.displayInfo.altitudeRange?.[0] ?? 0
       );
       altitudeMax = Math.max(
         altitudeMax,
-        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[1] ?? 0
+        sortedDisplayInfo[i + 1]?.displayInfo.altitudeRange?.[1] ?? 0
       );
       i++;
     }
 
     // Add a combined item to the accumulator.
     combinedDisplayInfo.push({
-      sectorID: sortedDisplayInfo[i].sectorID,
+      sectorID: sortedDisplayInfo[i]?.sectorID,
       displayInfo: {
-        ...sortedDisplayInfo[i].displayInfo,
+        ...sortedDisplayInfo[i]?.displayInfo,
         altitudeRange: [altitudeMin, altitudeMax],
       },
     });
   }
 
   return combinedDisplayInfo;
+}
+
+function getSectorLabels(
+  volume: Volume,
+  currFacilityGrouping: { sectors: Sector[] }
+) {
+  const sectorLabels = [];
+
+  for (const key of Object.keys(volume.ownership)) {
+    // Find the sector among currFacilityGrouping.sectors whose sectorID matches the key
+    const sector = currFacilityGrouping.sectors.find(
+      (sector) => sector.sectorID === key
+    );
+
+    if (sector) {
+      sectorLabels.push(sector.sectorLabel);
+    }
+  }
+
+  return sectorLabels;
 }
