@@ -297,7 +297,9 @@ export const renderPolygons = (
                         className="absolute right-0 top-0 pr-1 font-mono font-bold"
                         style={{ color: displayInfo.groupColor }}
                       >
-                        {displayInfo.altitudeRange?.[1] ?? "N/A"}
+                        {displayInfo.altitudeRange?.[1]
+                          ?.toString()
+                          .padStart(3, "0") ?? "N/A"}
                       </div>
 
                       {/* displayInfo.altitudeRange[0] display in the bottom right of the div */}
@@ -305,19 +307,21 @@ export const renderPolygons = (
                         className="absolute bottom-0 right-0 pr-1 font-mono font-bold"
                         style={{ color: displayInfo.groupColor }}
                       >
-                        {displayInfo.altitudeRange?.[0] ?? "N/A"}
+                        {displayInfo.altitudeRange?.[0]
+                          ?.toString()
+                          .padStart(3, "0") ?? "N/A"}
                       </div>
                     </div>
                   )
                 )}
-
-                <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
-                <div className="w-40 whitespace-normal text-neutral-300">
+                <div className="border-t-[1px]" />
+                <div className="w-40 whitespace-normal pt-1 text-neutral-300">
                   Sectors:{" "}
                   <span className="italic">
                     {getSectorLabels(volume, currFacilityGrouping).join(", ")}
                   </span>
                 </div>
+                <span className="w-40 whitespace-normal  text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
               </div>
             </Tooltip>
           </Polygon>
