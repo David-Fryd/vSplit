@@ -86,11 +86,25 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
         }}
         // pointerEvents: none so that tooltip doesn't dissapear for the polygon when blocked by the background of this div
       >
-        {Object.entries(displayInfo).flatMap(([sectorID, displayInfos]) =>
-          displayInfos.map((displayInfo: SectorDisplayInfo) => (
+        {Object.entries(displayInfo)
+          .flatMap(([sectorID, displayInfos]) =>
+            displayInfos.map((displayInfo: SectorDisplayInfo) => ({
+              sectorID,
+              displayInfo,
+            }))
+          )
+          .sort(
+            (
+              a: { sectorID: string; displayInfo: SectorDisplayInfo },
+              b: { sectorID: string; displayInfo: SectorDisplayInfo }
+            ) =>
+              (b.displayInfo.altitudeRange?.[0] ?? 0) -
+              (a.displayInfo.altitudeRange?.[0] ?? 0)
+          )
+          .map(({ sectorID, displayInfo }) => (
             <div
               className=" -mt-1.5 flex"
-              key={displayInfo.sectorID}
+              key={sectorID}
               style={{ color: displayInfo.groupColor }}
             >
               {displayInfo.groupName || "N/A"}:{" "}
@@ -98,8 +112,7 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
                 ? parseAltitudeRange(displayInfo.altitudeRange)
                 : "N/A"}
             </div>
-          ))
-        )}
+          ))}
       </div>
     </div>
   );
@@ -250,37 +263,51 @@ export const renderPolygons = (
               },
             }}
           >
-            <Tooltip className="myCSSClass" opacity={1}>
-              <div className=" flex flex-col border-2  border-white bg-neutral-800 p-2 text-white">
-                {Object.entries(displayInfo).flatMap(
-                  ([sectorID, displayInfos]) =>
-                    displayInfos.map((displayInfo: SectorDisplayInfo) => (
-                      <div key={displayInfo.sectorID} className="px-1 pb-2">
-                        <p
-                          className="font-bold underline"
-                          style={{ color: displayInfo.groupColor }}
-                        >
-                          {displayInfo.groupName || "N/A"} :{" "}
-                          {displayInfo.sectorLabel}
-                          {/* ({displayInfo.sectorID}) */}
-                        </p>
-                        <p
-                          style={{ color: displayInfo.groupColor }}
-                          className=""
-                        >
-                          ALTS:{" "}
-                          <b>
-                            {displayInfo.altitudeRange
-                              ? parseAltitudeRange(displayInfo.altitudeRange)
-                              : "N/A"}
-                          </b>
-                        </p>
-                        <p style={{ color: displayInfo.groupColor }}>
-                          FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
-                        </p>
-                      </div>
-                    ))
-                )}
+            <Tooltip
+              className="myCSSClass"
+              opacity={1}
+              position={[volume.labelLocation[1], volume.labelLocation[0]]}
+            >
+              <div className="flex flex-col border-2 border-white bg-neutral-800 p-2 text-white">
+                {Object.entries(displayInfo)
+                  .flatMap(([sectorID, displayInfos]) =>
+                    displayInfos.map((displayInfo: SectorDisplayInfo) => ({
+                      sectorID,
+                      displayInfo,
+                    }))
+                  )
+                  .sort(
+                    (
+                      a: { sectorID: string; displayInfo: SectorDisplayInfo },
+                      b: { sectorID: string; displayInfo: SectorDisplayInfo }
+                    ) =>
+                      (b.displayInfo.altitudeRange?.[0] ?? 0) -
+                      (a.displayInfo.altitudeRange?.[0] ?? 0)
+                  )
+                  .map(({ sectorID, displayInfo }) => (
+                    <div key={sectorID} className="px-1 pb-2">
+                      <p
+                        className="font-extrabold underline"
+                        style={{ color: displayInfo.groupColor }}
+                      >
+                        {displayInfo.groupName || "N/A"} :{" "}
+                        {displayInfo.sectorLabel}
+                        {/* ({displayInfo.sectorID}) */}
+                      </p>
+                      <p style={{ color: displayInfo.groupColor }} className="">
+                        ALTS:{" "}
+                        <b>
+                          {displayInfo.altitudeRange
+                            ? parseAltitudeRange(displayInfo.altitudeRange)
+                            : "N/A"}
+                        </b>
+                      </p>
+                      <p style={{ color: displayInfo.groupColor }}>
+                        FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
+                      </p>
+                    </div>
+                  ))}
+
                 <span className="mt-2 border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}</span>
               </div>
             </Tooltip>
