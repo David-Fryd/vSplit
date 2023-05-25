@@ -44,7 +44,7 @@ const MapNav = () => {
 
 const SettingsFlyout = () => {
   return (
-    <p className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg ">
+    <p className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg text-neutral-500">
       DISPLAY SETTINGS
     </p>
   );
@@ -52,7 +52,7 @@ const SettingsFlyout = () => {
 
 const QuickloadFlyout = () => {
   return (
-    <p className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg ">
+    <p className="m-0.5 flex h-16 items-center justify-center border-4 text-center text-lg text-neutral-500">
       QUICK LOAD
     </p>
   );
@@ -107,8 +107,7 @@ export const Sidebar = () => {
         >
           {!sessionData && <SignInOutButton sessionData={sessionData} />}
           <QuickloadFlyout />
-          <NavLink href="/sectorconfig">SECTOR CONFIG</NavLink>
-          <NavLink href="/firconfig">FIR CONFIG</NavLink>
+          <NavLink href="/splitconfig">SECTOR CONFIG</NavLink>
           {sessionData && <SignInOutButton sessionData={sessionData} />}
         </div>
       </div>

@@ -2,9 +2,8 @@ import { type NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { HonorModal } from "~/components/HonorModal";
 
-const FIRConfig: NextPage = () => {
+const SectorConfig: NextPage = () => {
   const { data: sessionData } = useSession();
-
   return (
     <div className="flex h-screen w-full items-center justify-center border-2 bg-neutral-900">
       {!sessionData ? (
@@ -27,15 +26,13 @@ const FIRConfig: NextPage = () => {
         </div>
       ) : (
         <>
+          {/* {sessionData.user.signedHonorCode ? (} */}
           <HonorModal />
-          <p className="text-white">
-            TODO: Associate sectors with the sectors you expect to see in the
-            sectordata file (add labels of sectors and such here)
-          </p>
+          <p className="text-white">Page WIP</p>
         </>
       )}
     </div>
   );
 };
 
-export default FIRConfig;
+export default SectorConfig;
