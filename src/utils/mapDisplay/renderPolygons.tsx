@@ -86,35 +86,20 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
         }}
         // pointerEvents: none so that tooltip doesn't dissapear for the polygon when blocked by the background of this div
       >
-        {Object.entries(displayInfo)
-          .flatMap(([sectorID, displayInfos]) =>
-            displayInfos.map((displayInfo: SectorDisplayInfo) => ({
-              sectorID,
-              displayInfo,
-            }))
-          )
-          .sort(
-            (
-              a: { sectorID: string; displayInfo: SectorDisplayInfo },
-              b: { sectorID: string; displayInfo: SectorDisplayInfo }
-            ) =>
-              (b.displayInfo.altitudeRange?.[0] ?? 0) -
-              (a.displayInfo.altitudeRange?.[0] ?? 0)
-          )
-          .map(({ sectorID, displayInfo }) => (
-            <div
-              className=" -mt-1.5 flex"
-              key={sectorID}
-              style={{ color: displayInfo.groupColor }}
-            >
-              {displayInfo.groupName || "N/A"}
-              {displayInfo.altitudeRange
-                ? parseAltitudeRange(displayInfo.altitudeRange) == "ALL"
-                  ? ""
-                  : ": " + parseAltitudeRange(displayInfo.altitudeRange)
-                : "N/A"}
-            </div>
-          ))}
+        {combineDisplayInfo(displayInfo).map(({ sectorID, displayInfo }) => (
+          <div
+            className=" -mt-1.5 flex"
+            key={sectorID}
+            style={{ color: displayInfo.groupColor }}
+          >
+            {displayInfo.groupName || "N/A"}
+            {displayInfo.altitudeRange
+              ? parseAltitudeRange(displayInfo.altitudeRange) == "ALL"
+                ? ""
+                : ": " + parseAltitudeRange(displayInfo.altitudeRange)
+              : "N/A"}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -271,22 +256,8 @@ export const renderPolygons = (
               position={[volume.labelLocation[1], volume.labelLocation[0]]}
             >
               <div className="flex flex-col border-2 border-white bg-neutral-800 p-2 text-white">
-                {Object.entries(displayInfo)
-                  .flatMap(([sectorID, displayInfos]) =>
-                    displayInfos.map((displayInfo: SectorDisplayInfo) => ({
-                      sectorID,
-                      displayInfo,
-                    }))
-                  )
-                  .sort(
-                    (
-                      a: { sectorID: string; displayInfo: SectorDisplayInfo },
-                      b: { sectorID: string; displayInfo: SectorDisplayInfo }
-                    ) =>
-                      (b.displayInfo.altitudeRange?.[0] ?? 0) -
-                      (a.displayInfo.altitudeRange?.[0] ?? 0)
-                  )
-                  .map(({ sectorID, displayInfo }) => (
+                {combineDisplayInfo(displayInfo).map(
+                  ({ sectorID, displayInfo }) => (
                     <div key={sectorID} className="px-1 pb-2">
                       <p
                         className=" font-mono text-lg font-extrabold underline"
@@ -295,7 +266,6 @@ export const renderPolygons = (
                         {displayInfo.groupName || "N/A"}
                         {!displayInfo.groupName && " : "}
                         {!displayInfo.groupName && displayInfo.sectorLabel}
-                        {/* ({displayInfo.sectorID}) */}
                       </p>
                       <p style={{ color: displayInfo.groupColor }} className="">
                         ALTS:{" "}
@@ -309,9 +279,10 @@ export const renderPolygons = (
                         FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
                       </p>
                     </div>
-                  ))}
+                  )
+                )}
 
-                <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName})`}</span>
+                <span className="w-40 whitespace-normal border-t-[1px] text-neutral-300">{`Volume ${j} of ${facilityData.fir.firLabel} (${facilityData.fir.firName}) `}</span>
               </div>
             </Tooltip>
           </Polygon>
@@ -320,3 +291,57 @@ export const renderPolygons = (
     });
   });
 };
+
+function combineDisplayInfo(displayInfo: DisplayInfo) {
+  const sortedDisplayInfo = Object.entries(displayInfo)
+    .flatMap(([sectorID, displayInfos]) =>
+      displayInfos.map((displayInfo: SectorDisplayInfo) => ({
+        sectorID,
+        displayInfo,
+      }))
+    )
+    .sort(
+      (
+        a: { sectorID: string; displayInfo: SectorDisplayInfo },
+        b: { sectorID: string; displayInfo: SectorDisplayInfo }
+      ) =>
+        (b.displayInfo.altitudeRange?.[0] ?? 0) -
+        (a.displayInfo.altitudeRange?.[0] ?? 0)
+    );
+
+  const combinedDisplayInfo = [];
+  for (let i = 0; i < sortedDisplayInfo.length; i++) {
+    let altitudeMin = sortedDisplayInfo[i].displayInfo.altitudeRange?.[0] ?? 0;
+    let altitudeMax = sortedDisplayInfo[i].displayInfo.altitudeRange?.[1] ?? 0;
+
+    while (
+      i < sortedDisplayInfo.length - 1 &&
+      sortedDisplayInfo[i].displayInfo.groupName ===
+        sortedDisplayInfo[i + 1].displayInfo.groupName &&
+      sortedDisplayInfo[i].displayInfo.altitudeRange?.[0] - 10 ===
+        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[1]
+    ) {
+      // Update the min and max altitude ranges.
+      altitudeMin = Math.min(
+        altitudeMin,
+        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[0] ?? 0
+      );
+      altitudeMax = Math.max(
+        altitudeMax,
+        sortedDisplayInfo[i + 1].displayInfo.altitudeRange?.[1] ?? 0
+      );
+      i++;
+    }
+
+    // Add a combined item to the accumulator.
+    combinedDisplayInfo.push({
+      sectorID: sortedDisplayInfo[i].sectorID,
+      displayInfo: {
+        ...sortedDisplayInfo[i].displayInfo,
+        altitudeRange: [altitudeMin, altitudeMax],
+      },
+    });
+  }
+
+  return combinedDisplayInfo;
+}
