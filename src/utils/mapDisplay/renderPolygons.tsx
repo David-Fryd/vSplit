@@ -264,12 +264,16 @@ export const renderPolygons = (
               opacity={1}
               position={[volume.labelLocation[1], volume.labelLocation[0]]}
             >
-              <div className="flex flex-col border-2 border-white bg-neutral-800 p-2 text-white">
+              <div className="relative flex flex-col border-2 border-white bg-neutral-800 p-2 text-white">
                 {combineDisplayInfo(displayInfo).map(
                   ({ sectorID, displayInfo }) => (
-                    <div key={sectorID} className="px-1 pb-2">
+                    <div
+                      key={sectorID}
+                      className="relative mb-2 border-b-0 border-r-4 px-1"
+                      style={{ borderColor: displayInfo.groupColor }}
+                    >
                       <p
-                        className=" font-mono text-lg font-extrabold underline"
+                        className="font-mono text-lg font-extrabold underline"
                         style={{ color: displayInfo.groupColor }}
                       >
                         {displayInfo.groupName || "N/A"}
@@ -287,6 +291,22 @@ export const renderPolygons = (
                       <p style={{ color: displayInfo.groupColor }}>
                         FREQ: <b>{displayInfo.groupFrequency || "N/A"}</b>
                       </p>
+
+                      {/* displayInfo.altitudeRange[1] display in the top right of the div */}
+                      <div
+                        className="absolute right-0 top-0 pr-1 font-mono font-bold"
+                        style={{ color: displayInfo.groupColor }}
+                      >
+                        {displayInfo.altitudeRange?.[1] ?? "N/A"}
+                      </div>
+
+                      {/* displayInfo.altitudeRange[0] display in the bottom right of the div */}
+                      <div
+                        className="absolute bottom-0 right-0 pr-1 font-mono font-bold"
+                        style={{ color: displayInfo.groupColor }}
+                      >
+                        {displayInfo.altitudeRange?.[0] ?? "N/A"}
+                      </div>
                     </div>
                   )
                 )}
