@@ -107,7 +107,7 @@ export const Sidebar = () => {
         >
           {!sessionData && <SignInOutButton sessionData={sessionData} />}
           <QuickloadFlyout />
-          <NavLink href="/splitconfig">SECTOR CONFIG</NavLink>
+          <NavLink href="/splitconfig">SPLIT CONFIG</NavLink>
           {sessionData && <SignInOutButton sessionData={sessionData} />}
         </div>
       </div>
