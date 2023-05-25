@@ -63,11 +63,62 @@ const hardcoded_presets: {
       { sectorID: "58", uniqueGroupID: 9 },
       { sectorID: "59", uniqueGroupID: 9 },
       { sectorID: "54", uniqueGroupID: 9 },
+    ],
+  },
+  {
+    // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
+    name: "LGA Heavy FNO",
+    assignments: [
+      //groupName 19 id=9
+      { sectorID: "18", uniqueGroupID: 9 },
+      { sectorID: "19", uniqueGroupID: 9 },
 
-      // //groupName 12 = id11
-      // { sectorID: "12", uniqueGroupID: 11 },
-      // { sectorID: "17", uniqueGroupID: 11 },
-      // { sectorID: "54", uniqueGroupID: 11 },
+      //groupName 17 id=14
+      { sectorID: "17", uniqueGroupID: 14 },
+      { sectorID: "51", uniqueGroupID: 14 },
+      { sectorID: "58", uniqueGroupID: 14 },
+      { sectorID: "59", uniqueGroupID: 14 },
+      { sectorID: "54", uniqueGroupID: 14 },
+
+      //groupName 12 id=11
+      { sectorID: "12", uniqueGroupID: 11 },
+
+      // groupName 36 id=12
+      { sectorID: "36", uniqueGroupID: 12 },
+      { sectorID: "09", uniqueGroupID: 12 },
+
+      // groupName 05 id=13
+      { sectorID: "05", uniqueGroupID: 13 },
+      { sectorID: "15", uniqueGroupID: 13 },
+      { sectorID: "37", uniqueGroupID: 13 },
+      { sectorID: "32", uniqueGroupID: 13 },
+      { sectorID: "52", uniqueGroupID: 13 },
+      { sectorID: "20", uniqueGroupID: 13 },
+    ],
+  },
+  {
+    // KEEP IN MIND THAT UNIQUEGROUPID != GROUPNAME
+    name: "Phapple vs Earth",
+    assignments: [
+      //groupName 19 id=9
+      { sectorID: "17", uniqueGroupID: 9 },
+      { sectorID: "18", uniqueGroupID: 9 },
+      { sectorID: "19", uniqueGroupID: 9 },
+      { sectorID: "51", uniqueGroupID: 9 },
+      { sectorID: "58", uniqueGroupID: 9 },
+      { sectorID: "59", uniqueGroupID: 9 },
+
+      //groupName 12 id=11
+      { sectorID: "12", uniqueGroupID: 11 },
+      { sectorID: "05", uniqueGroupID: 11 },
+      { sectorID: "13", uniqueGroupID: 11 },
+      { sectorID: "37", uniqueGroupID: 11 },
+      { sectorID: "32", uniqueGroupID: 11 },
+      { sectorID: "52", uniqueGroupID: 11 },
+      { sectorID: "20", uniqueGroupID: 11 },
+      { sectorID: "36", uniqueGroupID: 11 },
+      { sectorID: "09", uniqueGroupID: 11 },
+      { sectorID: "54", uniqueGroupID: 11 },
     ],
   },
   {
