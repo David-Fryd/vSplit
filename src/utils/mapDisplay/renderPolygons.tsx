@@ -107,9 +107,11 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
               key={sectorID}
               style={{ color: displayInfo.groupColor }}
             >
-              {displayInfo.groupName || "N/A"}:{" "}
+              {displayInfo.groupName || "N/A"}
               {displayInfo.altitudeRange
-                ? parseAltitudeRange(displayInfo.altitudeRange)
+                ? parseAltitudeRange(displayInfo.altitudeRange) == "ALL"
+                  ? ""
+                  : ": " + parseAltitudeRange(displayInfo.altitudeRange)
                 : "N/A"}
             </div>
           ))}
