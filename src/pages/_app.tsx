@@ -13,6 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+      <title>vSplit</title>
       <Layout>
         <Component {...pageProps} />
       </Layout>
