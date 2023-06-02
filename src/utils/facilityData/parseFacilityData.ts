@@ -8,6 +8,8 @@ import type {
   // AltitudeRange,
 } from "~/types/facilityData";
 
+// TODO: This file isn't really "parsing" the data, it's just validating its shape. Rename to "validateFacilityData.js"?
+
 function isFacilityData(data: unknown): data is FacilityData {
   if (typeof data !== "object" || data === null) {
     throw new Error(

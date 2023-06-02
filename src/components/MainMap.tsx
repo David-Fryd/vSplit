@@ -32,6 +32,9 @@ const MainMap = () => {
   );
   const [errorText, setErrorText] = React.useState<string | null>(null);
 
+  // TODO: Don't get the file names from the API, request the minified data file from the api
+  //   - this means the server will have to generate this ahead of time. maybe one file by combining all the
+  //     public folder data, and one JSON object formed from the database state to send sector combination info
   const filesInPublicFolder =
     api.facilitydata.getFacilityDataFilenames.useQuery();
 

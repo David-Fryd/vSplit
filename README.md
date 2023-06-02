@@ -2,7 +2,31 @@
 
 An open-source sector configuration mapping tool for VATSIM.
 
-Work In Progress
+## Developer Quick Start Guide
+
+1. Ensure [NodeJS](https://nodejs.org/en/download) is installed.
+    - If you work with multiple versions of node, we highly recommend [nvm](https://github.com/nvm-sh/nvm) (macOS/linux), or [nvm-windows](https://github.com/coreybutler/nvm-windows) (windows).
+1. Run `npm install` on the command line to install required dependencies.
+1. Create `.env` from `.env.example`, and fill out `VATSIM_DEV_CLIENT_ID` and `VATSIM_DEV_CLIENT_SECRET`.
+    - You will need to contact us for these. (???)
+1. Create a PostgreSQL database using [Railway](https://railway.app/). This is free, no account needed (though creating an account will ensure the database persists). Or, if you have experience working with PostgreSQL, and prefer to spin a database up on your own with other methods, feel free.
+1. Using Railway, the setup process is as follows:
+    - Click "Start New Project" --> "Provision PostgreSQL".
+    - When the Postgres tile appears in the middle of the page, click it to open.
+    - Under the connect tab, under "Available Variables", copy the `DATABASE_URL`.
+    - Paste that URL as `DATABASE_URL` in the `.env` file in the vSplit repository.
+1. Run `npx prisma db push` on the command line to set up the database structure.
+1. Run `npm run dev` on the command line to build and run the app.
+1. Open the vSplit database sync page at [`http://localhost:3000/sync](http://localhost:3000/sync).
+1. On the left side, click "Log In" --> "Sign In with VATSIM Dev", and use the following credentials:
+    - CID:  10000005
+    - PW:   10000005
+1. You should now be logged in. Click "Sync Database" to populate the database with the latest facility data.
+1. Click "MAP" to return to the map, or just visit [`http://localhost:3000](http://localhost:3000).
+1. Proceed with development. Some notes:
+    - If you change facility data, you will need to resync the database, as in step 8.
+    - If you change other parts of the app, it will automatically rebuild on file save. You do not need to restart `npm run dev`, as long as it is still running.
+
 
 <!-- # Create T3 App
 
