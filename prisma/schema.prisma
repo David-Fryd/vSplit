@@ -91,6 +91,12 @@ model FIR {
   groups   Group[]  @relation("FIRtoGroups")
 }
 
+// Client Deliverables
+model Deliverables {
+  deliverableName String  @unique // "facilityData" or "groupData"
+  content         String          // stringified json to send to the client
+}
+
 // model Example {
 //   id        String   @id @default(cuid())
 //   createdAt DateTime @default(now())

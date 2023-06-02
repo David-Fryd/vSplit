@@ -38,6 +38,8 @@ const MainMap = () => {
   const filesInPublicFolder =
     api.facilitydata.getFacilityDataFilenames.useQuery();
 
+  console.warn(api.facilitydata.getGroupData.useQuery().data);
+
   const fetchFacilityData = async () => {
     const facilityDataArray: FacilityData[] = [];
     for (const file of filesInPublicFolder.data ?? []) {

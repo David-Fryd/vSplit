@@ -204,6 +204,22 @@ export async function syncFacilityData({
       // console.log("facilityDataFromDB", facilityDataFromDB?.sectors);
       // console.log("facilityDataFromFile", facilityDataFromFile.sectors);
     }
+
+    // Generate deliverable data
+    // console.log(
+    //   `FIR ${facilityDataFromFile.fir.firName} doesn't exist in DB, creating it`
+    // );
+    // const fir = await ctx.prisma.fIR.create({
+    //   data: {
+    //     firName: facilityDataFromFile.fir.firName,
+    //     firLabel: facilityDataFromFile.fir.firLabel,
+    //     sectors: {},
+    //   },
+    // });
+    // returnMessage.firs.push({
+    //   firName: fir.firName,
+    //   syncMessages: ["FIR created in database"],
+    // });
   });
 
   await Promise.all(dataPromises);

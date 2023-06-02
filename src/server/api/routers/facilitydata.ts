@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { z } from "zod";
 
 import {
@@ -44,6 +45,22 @@ export const facilityDataRouter = createTRPCRouter({
     return files;
   }),
 
+  getFacilityData: publicProcedure.query(({ ctx }) => {
+    const facilityData =  ctx.prisma.deliverables.findFirst({
+      where: { deliverableName: 'facilityData' },
+    });
+
+    console.log(facilityData);
+
+    return facilityData;
+  }),
+
+  getGroupData: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.deliverables.findFirst({
+      where: { deliverableName: 'groupData' },
+    });
+  }),
+
   syncFacilityData: protectedProcedure.mutation(({ ctx }) => {
     console.log("sync facility data endpoint called");
     return syncFacilityData({ ctx });
@@ -74,6 +91,7 @@ export const facilityDataRouter = createTRPCRouter({
       });
     }),
 
+  // update group data
   batchAssignGroupsToSectors: protectedProcedure
     .input(
       z.object({
@@ -111,6 +129,7 @@ export const facilityDataRouter = createTRPCRouter({
           );
         }
 
+        // update the sector's group assignment
         await ctx.prisma.sector.update({
           where: {
             uniqueSectorID: sectorExists.uniqueSectorID,
@@ -120,6 +139,40 @@ export const facilityDataRouter = createTRPCRouter({
           },
         });
       }
+
+      // TODO: Move this somewhere that it isn't needlessly repeating this action
+      // build the group data deliverable
+      const currentGroupDataJson = await ctx.prisma.deliverables.findFirst({ where: { deliverableName: 'groupData' }});
+      const groupTable = await ctx.prisma.group.findMany();
+      const nextGroupDataJson = {
+        timestamp: Date.now(),
+        groups: groupTable.map(groupTableRow => {
+          const group = {
+            id: groupTableRow.uniqueGroupID,
+            fir: firName,
+            name: groupTableRow.groupName,
+            frequency: groupTableRow.groupFrequency,
+            notes: groupTableRow.notes,
+            color: groupTableRow.groupColor,
+            sectorList: assignments.filter(a => a.groupId === groupTableRow.uniqueGroupID).map(b => b.sectorId)
+          };
+
+          return group;
+        })
+      };
+
+      // if changes were made, update the group data deliverable with the new groupings
+      // TODO: this if statement doesn't seem to work, it changes it regardless. But why?
+      // if (!_.isEqual(nextGroupDataJson.groups, JSON.parse(currentGroupDataJson.content).groups)) {
+      await ctx.prisma.deliverables.update({
+        where: {
+          deliverableName: 'groupData'
+        },
+        data: {
+          content: JSON.stringify(nextGroupDataJson)
+        }
+      });
+      // }
 
       return { message: "All updates were successful" };
     }),
