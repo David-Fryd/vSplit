@@ -67,7 +67,7 @@ const MainMap = () => {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {allFacilityData && renderPolygons(allFacilityData, [])}
+        {allFacilityData && renderPolygons(allFacilityData)}
 
         {loading && (
           <div className="absolute left-0 top-0 z-[9999] flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-50">

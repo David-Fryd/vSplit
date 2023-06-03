@@ -1,16 +1,16 @@
-import { Polygon, Tooltip, Marker } from "react-leaflet";
-import type { AltitudeRange, AirspaceVolume, FacilityImproved } from "~/types/facilityData";
-import type {
-  LatLngExpression,
-  LatLngBoundsExpression,
-} from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { api } from "../api";
 import assert from "assert";
-import { averageHexFromGroupcolors } from "./colorUtils";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import type { AltitudeRange, AirspaceVolume, Deliverable, FacilityImproved, GroupCollection } from "~/types/facilityData";
+import type { LatLngExpression, LatLngBoundsExpression, } from "leaflet";
+import type { Sector } from "@prisma/client";
+
+import { Polygon, Tooltip, Marker } from "react-leaflet";
+import { api } from "../api";
+import { averageHexFromGroupcolors } from "./colorUtils";
 import { renderToString } from "react-dom/server";
-import { Sector } from "@prisma/client";
+
 
 const coordinatesToLatLngExpression = (
   coordinates: number[][][]
@@ -114,10 +114,20 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
 }
 
 export const renderPolygons = (
-  allFacilityData: FacilityImproved[],
-  allGroupData: unknown[]
+  allFacilityData: FacilityImproved[]
 ) => {
+
+  // TODO: delete me once replaced with the below
   const groupings = api.facilitydata.getFIRsWithGroups.useQuery();
+  
+  // TODO: Use me and then delete the above `groupings`!
+  const eqGroupData = api.facilitydata.getGroupData.useQuery().data as Deliverable;
+  // const { timestamp, groups } = JSON.parse(eqGroupData?.content) as GroupCollection;
+  
+  
+  
+  
+  
   // console.log("GROUPINGS FROM DB: ", groupings.data);
 
   return allFacilityData.flatMap((facilityData: FacilityImproved, i) => {

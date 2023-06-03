@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import { z } from "zod";
+import type { Deliverable, GroupCollection } from '~/types/facilityData';
 
 import {
   createTRPCRouter,
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { Deliverable, GroupCollection } from '~/types/facilityData';
 import { syncFacilityData } from "~/utils/facilityData/server/syncFacilityData";
 
 export const facilityDataRouter = createTRPCRouter({
