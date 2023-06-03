@@ -5,19 +5,13 @@ import {
   AttributionControl,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { api } from "../utils/api";
-import type { FacilityCollection, FacilityData, FacilityImproved } from "~/types/facilityData";
+import type { FacilityCollection, FacilityImproved } from "~/types/facilityData";
 import { renderPolygons } from "~/utils/mapDisplay/renderPolygons";
 import LoadingIcon from "./LoadingIcon";
 import _ from "lodash";
 
 // const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
-  // Re-request even on tab in/out
-  // const firData = api.facilitydata.getFIRsWithSectors.useQuery();
-  // TODO: Implement, and inform how groups are drawn etc...
-  // const groups = api.facilitydata.getFIRsWithGroups.useQuery();
-
   const [allFacilityData, setAllFacilityData] = React.useState<FacilityImproved[]>(
     []
   );
@@ -25,14 +19,7 @@ const MainMap = () => {
   const [loadingText, setLoadingText] = React.useState<string>(
     "Loading facility data files"
   );
-  const [errorText, setErrorText] = React.useState<string | null>(null);
-
-  // TODO: Don't get the file names from the API, request the minified data file from the api
-  //   - this means the server will have to generate this ahead of time. maybe one file by combining all the
-  //     public folder data, and one JSON object formed from the database state to send sector combination info
-  const allFilesInPublicFolder = api.facilitydata.getFacilityDataFilenames.useQuery();
-  const facilityFilesInPublicFolder = _.without(allFilesInPublicFolder.data,'~allFacilities.json');
-
+  // const [errorText, setErrorText] = React.useState<string | null>(null);
   const fetchFacilityData = async () => {
     setLoadingText('Loading facility data...');
     const facilityList: FacilityImproved[] = [];
@@ -47,43 +34,23 @@ const MainMap = () => {
 
       return null;
     }
-    // for (const file of facilityFilesInPublicFolder ?? []) {
-    //   // console.log("getting facility data from file:", file);
-    //   setLoadingText(`Loading facility data from ${file}`);
-    //   const response = await fetch(`/facilityData/${file}`);
-    //   if (response.ok) {
-    //     const rawData = await response.text();
-    //     const facilityData = parseFacilityData(rawData);
-    //     // console.log("GOT FACILITY DATA:", facilityData);
-    //     facilityList.push(facilityData);
-    //     setLoadingText(`Loaded ${facilityData.fir.lid} facility data`);
-    //   } else {
-    //     console.error(
-    //       `Failed to fetch facility data from ${file}: ${response.statusText}`
-    //     );
-    //     return null;
-    //   }
-    // }
-    // // if (facilityFilesInPublicFolder.error.data) {
-    // //   setErrorText(`Could not load files from public folder`);
-    // //   console.log(`setting error text to ${errorText ? errorText : ""}`);
-    // // }
+
     setAllFacilityData(facilityList);
     setLoading(false);
     setLoadingText("");
   };
 
+  // TODO: This seems to run repeatedly... investigate me!
   // Fetch facility data when component is mounted
   React.useEffect(() => {
-    if (facilityFilesInPublicFolder) {
+    console.log('Fetching new facility data');
+    if (true) {
       fetchFacilityData().catch((error) => {
         console.error("Error fetching facility data", error);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allFilesInPublicFolder.data]);
-
-  // console.log("allFacilityData", allFacilityData);
+  }, []);
 
   return (
     <div className="relative h-full w-full">

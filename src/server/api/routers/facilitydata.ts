@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { z } from "zod";
 
 import {
@@ -8,22 +8,8 @@ import {
 } from "~/server/api/trpc";
 import { syncFacilityData } from "~/utils/facilityData/server/syncFacilityData";
 
-import fs from "fs/promises";
-import path from "path";
-
 export const facilityDataRouter = createTRPCRouter({
-  getFIRsWithSectors: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.fIR.findMany({
-      include: {
-        sectors: true,
-      },
-    });
-  }),
-
-  getAllFIR: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.fIR.findMany();
-  }),
-
+  // TODO: Remove me, after removing my use in TempSplitter.tsx
   getAllSectorFromFIR: publicProcedure
     .input(z.object({ firName: z.string() }))
     .query(({ input, ctx }) => {
@@ -33,17 +19,6 @@ export const facilityDataRouter = createTRPCRouter({
         },
       });
     }),
-
-  getAllSector: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.sector.findMany();
-  }),
-
-  getFacilityDataFilenames: publicProcedure.query(({ ctx }) => {
-    const directoryPath = path.join(process.cwd(), "public", "facilityData");
-    // List all files in the directory
-    const files = fs.readdir(directoryPath);
-    return files;
-  }),
 
   getFacilityData: publicProcedure.query(({ ctx }) => {
     const facilityData =  ctx.prisma.deliverables.findFirst({
@@ -61,11 +36,17 @@ export const facilityDataRouter = createTRPCRouter({
     });
   }),
 
+  // TODO: Is a better name appropriate here? What it's really doing
+  // is overwriting the comprehensive facility data file and updating
+  // the facility dataset timestamp in the database. It's a single pull
+  // of the individual files, and generation of the merged one.
   syncFacilityData: protectedProcedure.mutation(({ ctx }) => {
     console.log("sync facility data endpoint called");
     return syncFacilityData({ ctx });
   }),
 
+  // TODO: This is covered by getGroupData. Remove me once all users
+  // are reconnected to this.getGroupData()
   getFIRsWithGroups: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.fIR.findMany({
       include: {
@@ -78,6 +59,7 @@ export const facilityDataRouter = createTRPCRouter({
     });
   }),
 
+  // TODO: remove
   getGroupsWithSectorsFromFIR: publicProcedure
     .input(z.object({ firName: z.string() }))
     .query(({ input, ctx }) => {
@@ -91,6 +73,7 @@ export const facilityDataRouter = createTRPCRouter({
       });
     }),
 
+  // TODO: improve naming
   // update group data
   batchAssignGroupsToSectors: protectedProcedure
     .input(

@@ -1,8 +1,7 @@
-import { Polygon, Polyline, Tooltip, SVGOverlay, Marker } from "react-leaflet";
-import type { AltitudeRange, FacilityData, AirspaceVolume, FacilityImproved } from "~/types/facilityData";
+import { Polygon, Tooltip, Marker } from "react-leaflet";
+import type { AltitudeRange, AirspaceVolume, FacilityImproved } from "~/types/facilityData";
 import type {
   LatLngExpression,
-  LatLngTuple,
   LatLngBoundsExpression,
 } from "leaflet";
 import "leaflet/dist/leaflet.css";
