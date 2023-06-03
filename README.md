@@ -25,7 +25,7 @@ An open-source sector configuration mapping tool for VATSIM.
    - CID: 10000005
    - PW: 10000005
 1. Open the vSplit database sync page at [`http://localhost:3000/sync](http://localhost:3000/sync).
-1. You should already be logged in (step 7). Click "Sync Database" to populate the database with the latest facility data.
+1. You should already be logged in (step 8). Click "Sync Database" to populate the database with the latest facility data.
 1. Click "MAP" to return to the map, or just visit [`http://localhost:3000](http://localhost:3000).
 1. Proceed with development. Some notes:
    - If you change facility data, you will need to resync the database, as in step 8.
