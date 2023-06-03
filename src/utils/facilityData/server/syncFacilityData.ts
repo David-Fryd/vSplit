@@ -2,7 +2,7 @@
 // THAT SYNCS DATABASE FIR DATA WITH THE FACILITY DATA IN THE PUBLIC DIRECTORY
 
 import { parseFacilityData } from "../parseFacilityData";
-import type { FacilityData } from "~/types/facilityData";
+import type { FacilityCollection, FacilityImproved, FacilityRaw } from "~/types/facilityData";
 
 import fsRegular from 'fs';
 import fs from "fs/promises";
@@ -10,7 +10,6 @@ import path from "path";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import type { Session } from "next-auth";
 import assert from "assert";
-import { filepath } from "prettier.config.cjs";
 import _ from "lodash";
 
 export type SyncFacilityDataReturn = {
@@ -211,42 +210,6 @@ export async function syncFacilityData({
   });
 
   await Promise.all(dataPromises);
-
-  // the shape of the output file
-  interface FacilityCollection {
-    timestamp: number,
-    facilities: FacilityImproved[]
-  }
-
-  // TODO: Once everything is working, just use this format, and reformat the data files to match it.
-  // facility shape used in comprehensive facility file
-  interface FacilityImproved {
-    firDetails: {
-      id: number,
-      lid: string,
-      fullName: string
-    },
-    sectorNames: object,
-    airspaceVolumes: AirspaceVolume[]
-  }
-
-  // TODO: Deprecate me in favor of FacilityImproved
-  // facility shape used in zmaSectors.json
-  interface FacilityRaw {
-    fir: {
-      firName: string,
-      firLabel: string
-    },
-    sectors: object,
-    volumes: AirspaceVolume[]
-  }
-
-  // shape of an airspace volume
-  interface AirspaceVolume {
-    labelLocation: number[],
-    ownership: object,
-    geojson: object
-  }
 
   // TODO: Don't overwrite the file if there are no changes (other than timestamp)
   // Generate comprehensive facilities file, and save it in public folder

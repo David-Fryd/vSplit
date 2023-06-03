@@ -1,5 +1,5 @@
 import { Polygon, Polyline, Tooltip, SVGOverlay, Marker } from "react-leaflet";
-import type { AltitudeRange, FacilityData, Volume } from "~/types/facilityData";
+import type { AltitudeRange, FacilityData, AirspaceVolume } from "~/types/facilityData";
 import type {
   LatLngExpression,
   LatLngTuple,
@@ -130,7 +130,7 @@ export const renderPolygons = (
     //   currFacilityGrouping
     // );
 
-    return facilityData.volumes.map((volume: Volume, j) => {
+    return facilityData.volumes.map((volume: AirspaceVolume, j) => {
       if (currFacilityGrouping === undefined) {
         return null;
         // Don't render anything on the map if the groups haven't loaded yet
@@ -383,7 +383,7 @@ function combineDisplayInfo(displayInfo: DisplayInfo) {
 }
 
 function getSectorLabels(
-  volume: Volume,
+  volume: AirspaceVolume,
   currFacilityGrouping: { sectors: Sector[] }
 ) {
   const sectorLabels = [];

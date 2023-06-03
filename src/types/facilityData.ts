@@ -1,13 +1,13 @@
 // Each facility will provide a .json file of the following format:
 export type FacilityData = {
-  fir: FIRMetadata;
-  sectors: Sectors;
-  volumes: Volume[];
+  fir: FirDetails;
+  sectors: SectorNameMap; // TODO: rename "sectors" to "sectorNames"
+  volumes: AirspaceVolume[]; // TODO: rename "volumes" to "airspaceVolumes"
 };
 
-export type FIRMetadata = {
-  firName: string;
-  firLabel: string;
+export type FirDetails = {
+  firName: string; // TODO: rename me from "firName" to "lid" (for FAA LID, 'location id')
+  firLabel: string; // TODO: rename me from "firLabel" to "fullName"
 };
 
 export type AltitudeRange = [number, number];
@@ -25,12 +25,41 @@ export type Geojson = {
   id: number;
 };
 
-export type Volume = {
+export type AirspaceVolume = {
   labelLocation: [number, number];
   ownership: Ownership;
   geojson: Geojson;
 };
 
-export type Sectors = {
+export type SectorNameMap = {
   [sectorId: string]: string;
 };
+
+// the shape of the output file
+export interface FacilityCollection {
+  timestamp: number,
+  facilities: FacilityImproved[]
+}
+
+// TODO: Once everything is working, just use this format, and reformat the data files to match it.
+// facility shape used in comprehensive facility file
+export interface FacilityImproved {
+  firDetails: {
+    id: number,
+    lid: string,
+    fullName: string
+  },
+  sectorNames: object,
+  airspaceVolumes: AirspaceVolume[]
+}
+
+// TODO: Deprecate me in favor of FacilityImproved
+// facility shape used in zmaSectors.json
+export interface FacilityRaw {
+  fir: {
+    firName: string,
+    firLabel: string
+  },
+  sectors: object,
+  volumes: AirspaceVolume[]
+}
