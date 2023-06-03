@@ -15,6 +15,7 @@ import { parseFacilityData } from "~/utils/facilityData/parseFacilityData";
 import type { FacilityData } from "~/types/facilityData";
 import { renderPolygons } from "~/utils/mapDisplay/renderPolygons";
 import LoadingIcon from "./LoadingIcon";
+import _ from "lodash";
 
 // const MainMap: React.FC<MainMapProps> = ({ sectorsWithVolumes }) => {
 const MainMap = () => {
@@ -35,21 +36,19 @@ const MainMap = () => {
   // TODO: Don't get the file names from the API, request the minified data file from the api
   //   - this means the server will have to generate this ahead of time. maybe one file by combining all the
   //     public folder data, and one JSON object formed from the database state to send sector combination info
-  const filesInPublicFolder =
-    api.facilitydata.getFacilityDataFilenames.useQuery();
-
-  console.warn(api.facilitydata.getGroupData.useQuery().data);
+  const allFilesInPublicFolder = api.facilitydata.getFacilityDataFilenames.useQuery();
+  const facilityFilesInPublicFolder = _.without(allFilesInPublicFolder.data,'~allFacilities.json');
 
   const fetchFacilityData = async () => {
     const facilityDataArray: FacilityData[] = [];
-    for (const file of filesInPublicFolder.data ?? []) {
-      console.log("getting facility data from file:", file);
+    for (const file of facilityFilesInPublicFolder ?? []) {
+      // console.log("getting facility data from file:", file);
       setLoadingText(`Loading facility data from ${file}`);
       const response = await fetch(`/facilityData/${file}`);
       if (response.ok) {
         const rawData = await response.text();
         const facilityData = parseFacilityData(rawData);
-        console.log("GOT FACILITY DATA:", facilityData);
+        // console.log("GOT FACILITY DATA:", facilityData);
         facilityDataArray.push(facilityData);
         setLoadingText(`Loaded ${facilityData.fir.firName} facility data`);
       } else {
@@ -59,7 +58,7 @@ const MainMap = () => {
         return null;
       }
     }
-    // if (filesInPublicFolder.error.data) {
+    // if (facilityFilesInPublicFolder.error.data) {
     //   setErrorText(`Could not load files from public folder`);
     //   console.log(`setting error text to ${errorText ? errorText : ""}`);
     // }
@@ -70,15 +69,15 @@ const MainMap = () => {
 
   // Fetch facility data when component is mounted
   React.useEffect(() => {
-    if (filesInPublicFolder.data) {
+    if (facilityFilesInPublicFolder) {
       fetchFacilityData().catch((error) => {
         console.error("Error fetching facility data", error);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filesInPublicFolder.data]);
+  }, [allFilesInPublicFolder.data]);
 
-  console.log("allFacilityData", allFacilityData);
+  // console.log("allFacilityData", allFacilityData);
 
   return (
     <div className="relative h-full w-full">

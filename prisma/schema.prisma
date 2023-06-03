@@ -93,8 +93,14 @@ model FIR {
 
 // Client Deliverables
 model Deliverables {
-  deliverableName String  @unique // "facilityData" or "groupData"
+  deliverableName String  @unique // "groupData" or "datasetTimestamps"
   content         String          // stringified json to send to the client
+}
+
+// Deliverable Timestamps
+model Timestamps {
+  name  String  @unique // "facilityDatasetTimestamp" or "groupDatasetTimestamp"
+  value BigInt          // JS time integer, ms, like from Date.now()
 }
 
 // model Example {

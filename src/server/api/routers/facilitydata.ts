@@ -140,7 +140,8 @@ export const facilityDataRouter = createTRPCRouter({
         });
       }
 
-      // TODO: Move this somewhere that it isn't needlessly repeating this action
+      // ---------- start new stuff below --------------
+
       // build the group data deliverable
       const currentGroupDataJson = await ctx.prisma.deliverables.findFirst({ where: { deliverableName: 'groupData' }});
       const groupTable = await ctx.prisma.group.findMany();
@@ -163,16 +164,27 @@ export const facilityDataRouter = createTRPCRouter({
 
       // if changes were made, update the group data deliverable with the new groupings
       // TODO: this if statement doesn't seem to work, it changes it regardless. But why?
-      // if (!_.isEqual(nextGroupDataJson.groups, JSON.parse(currentGroupDataJson.content).groups)) {
-      await ctx.prisma.deliverables.update({
-        where: {
-          deliverableName: 'groupData'
-        },
-        data: {
-          content: JSON.stringify(nextGroupDataJson)
-        }
-      });
-      // }
+      if (!_.isEqual(nextGroupDataJson.groups, JSON.parse(currentGroupDataJson.content).groups)) {
+        // update the groupdata in the database
+        await ctx.prisma.deliverables.update({
+          where: {
+            deliverableName: 'groupData'
+          },
+          data: {
+            content: JSON.stringify(nextGroupDataJson)
+          }
+        });
+
+        // update the group dataset timestamp in the database
+        await ctx.prisma.timestamps.update({
+          where: {
+            name: 'groupDatasetTimestamp'
+          },
+          data: {
+            value: nextGroupDataJson.timestamp
+          }
+        });
+      }
 
       return { message: "All updates were successful" };
     }),

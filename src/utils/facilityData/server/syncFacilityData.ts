@@ -4,11 +4,14 @@
 import { parseFacilityData } from "../parseFacilityData";
 import type { FacilityData } from "~/types/facilityData";
 
+import fsRegular from 'fs';
 import fs from "fs/promises";
 import path from "path";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import type { Session } from "next-auth";
 import assert from "assert";
+import { filepath } from "prettier.config.cjs";
+import _ from "lodash";
 
 export type SyncFacilityDataReturn = {
   firs: { firName: string; syncMessages: string[] }[];
@@ -30,7 +33,8 @@ export async function syncFacilityData({
   const directoryPath = path.join(process.cwd(), "public", "facilityData");
 
   // List all files in the directory
-  const files = await fs.readdir(directoryPath);
+  let files = await fs.readdir(directoryPath);
+  files = _.without(files, '~allFacilities.json');
 
   // Keep track of the FIR names we've already encountered
   // firName -> file name it was seen in (for error message purposes)
@@ -204,26 +208,97 @@ export async function syncFacilityData({
       // console.log("facilityDataFromDB", facilityDataFromDB?.sectors);
       // console.log("facilityDataFromFile", facilityDataFromFile.sectors);
     }
-
-    // Generate deliverable data
-    // console.log(
-    //   `FIR ${facilityDataFromFile.fir.firName} doesn't exist in DB, creating it`
-    // );
-    // const fir = await ctx.prisma.fIR.create({
-    //   data: {
-    //     firName: facilityDataFromFile.fir.firName,
-    //     firLabel: facilityDataFromFile.fir.firLabel,
-    //     sectors: {},
-    //   },
-    // });
-    // returnMessage.firs.push({
-    //   firName: fir.firName,
-    //   syncMessages: ["FIR created in database"],
-    // });
   });
 
   await Promise.all(dataPromises);
 
-  // console.log("parsed data!", parsedData);
+  // the shape of the output file
+  interface FacilityCollection {
+    timestamp: number,
+    facilities: FacilityImproved[]
+  }
+
+  // TODO: Once everything is working, just use this format, and reformat the data files to match it.
+  // facility shape used in comprehensive facility file
+  interface FacilityImproved {
+    firDetails: {
+      id: number,
+      lid: string,
+      fullName: string
+    },
+    sectorNames: object,
+    airspaceVolumes: AirspaceVolume[]
+  }
+
+  // TODO: Deprecate me in favor of FacilityImproved
+  // facility shape used in zmaSectors.json
+  interface FacilityRaw {
+    fir: {
+      firName: string,
+      firLabel: string
+    },
+    sectors: object,
+    volumes: AirspaceVolume[]
+  }
+
+  // shape of an airspace volume
+  interface AirspaceVolume {
+    labelLocation: number[],
+    ownership: object,
+    geojson: object
+  }
+
+  // TODO: Don't overwrite the file if there are no changes (other than timestamp)
+  // Generate comprehensive facilities file, and save it in public folder
+  const facilityCollection: FacilityCollection = {
+    timestamp: Date.now(),
+    facilities: []
+  };
+  const filePaths = files.map(filename => path.join(directoryPath, filename));
+
+  // Reformat all of the source data files to the desired format, and add to the FacilityCollection
+  for (const filePath of filePaths) {
+    const fileContent = fsRegular.readFileSync(filePath, 'utf8');
+    const facilityRawJson = JSON.parse(fileContent) as FacilityRaw;
+    const index = facilityCollection.facilities.length + 1;
+    const facility: FacilityImproved = {
+      firDetails: {
+        // TODO: The names in the FIR db table are misleading... improve them!
+        id: index + 1,
+        lid: facilityRawJson.fir.firName,
+        fullName: facilityRawJson.fir.firLabel
+      },
+      sectorNames: facilityRawJson.sectors,
+      airspaceVolumes: facilityRawJson.volumes
+    };
+
+    facilityCollection.facilities.push(facility);
+  }
+
+  // Assemble the comprehensive facility file
+  const comprehensiveFacilityFileName = '~allFacilities.json';
+  const comprehensiveFacilityFilePath = path.join(directoryPath, comprehensiveFacilityFileName);
+  const comprehensiveFacilityFileText = JSON.stringify(facilityCollection);
+  const currentFileRawText = fsRegular.readFileSync(comprehensiveFacilityFilePath, 'utf8');
+  const currentFileFacilityCollection = JSON.parse(currentFileRawText) as FacilityCollection;
+  const nextFileFacilityCollection = facilityCollection;
+  
+  // Apply changes only if the proposed data differs from the current
+  if (!_.isEqual(currentFileFacilityCollection.facilities, nextFileFacilityCollection.facilities)) {
+    // Write the comprehensive facility file
+    fsRegular.writeFileSync(comprehensiveFacilityFilePath, comprehensiveFacilityFileText);
+  
+    // Update the facility dataset timestamp in the database
+    await ctx.prisma.timestamps.update({
+      where: {
+        name: 'facilityDatasetTimestamp'
+      },
+      data: {
+        value: facilityCollection.timestamp
+        // value: 0
+      }
+    });
+  }
+
   return returnMessage;
 }

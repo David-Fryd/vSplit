@@ -119,16 +119,16 @@ export const renderPolygons = (
   allGroupData: unknown[]
 ) => {
   const groupings = api.facilitydata.getFIRsWithGroups.useQuery();
-  console.log("GROUPINGS FROM DB: ", groupings.data);
+  // console.log("GROUPINGS FROM DB: ", groupings.data);
 
   return allFacilityData.flatMap((facilityData: FacilityData, i) => {
     const currFacilityGrouping = groupings.data?.find(
       (grouping) => grouping.firName === facilityData.fir.firName
     );
-    console.log(
-      "currently considering facility w groupings: ",
-      currFacilityGrouping
-    );
+    // console.log(
+    //   "currently considering facility w groupings: ",
+    //   currFacilityGrouping
+    // );
 
     return facilityData.volumes.map((volume: Volume, j) => {
       if (currFacilityGrouping === undefined) {
@@ -149,7 +149,7 @@ export const renderPolygons = (
           (sector) => sector.sectorID === key
         );
         if (sector === undefined) {
-          console.log(`sector is undefined for key ${key}`);
+          // console.log(`sector is undefined for key ${key}`);
           return null;
         }
 
@@ -176,17 +176,17 @@ export const renderPolygons = (
           const array = displayInfo[key];
           assert(array !== undefined, "array should not be undefined");
           array.push(newDisplayInfo);
-          console.log("pushed");
+          // console.log("pushed");
         } else {
           displayInfo[key] = [newDisplayInfo];
-          console.log("elsed");
+          // console.log("elsed");
         }
       }
 
       // Number of unique groups for a given volume w/ will determine the color/dashing of the polygon/boundaries
       const uniqueGroupsInfo: GroupInfo[] = [];
       for (const [key, value] of Object.entries(displayInfo)) {
-        console.log("examining key for unique groups: ", key);
+        // console.log("examining key for unique groups: ", key);
 
         value.forEach((sectorInfo) => {
           if (
@@ -213,11 +213,11 @@ export const renderPolygons = (
         ); /* TODO - Combine hex values as if they were overlaid transparently on one another */
 
       if (uniqueGroupsInfo.length !== 0) {
-        console.log(
-          `this given volume has ${
-            uniqueGroupsInfo.length
-          } groups (${JSON.stringify(uniqueGroupsInfo)})`
-        );
+        // console.log(
+        //   `this given volume has ${
+        //     uniqueGroupsInfo.length
+        //   } groups (${JSON.stringify(uniqueGroupsInfo)})`
+        // );
       }
 
       const positions = coordinatesToLatLngExpression(
@@ -255,7 +255,7 @@ export const renderPolygons = (
             eventHandlers={{
               click: (event) => {
                 L.DomEvent.stop(event);
-                console.log("clicked");
+                // console.log("clicked");
               },
             }}
           >
