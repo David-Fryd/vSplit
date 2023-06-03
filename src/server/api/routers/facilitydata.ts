@@ -1,4 +1,6 @@
+import _ from 'lodash';
 import { z } from "zod";
+import type { Deliverable, GroupCollection } from '~/types/facilityData';
 
 import {
   createTRPCRouter,
@@ -7,22 +9,8 @@ import {
 } from "~/server/api/trpc";
 import { syncFacilityData } from "~/utils/facilityData/server/syncFacilityData";
 
-import fs from "fs/promises";
-import path from "path";
-
 export const facilityDataRouter = createTRPCRouter({
-  getFIRsWithSectors: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.fIR.findMany({
-      include: {
-        sectors: true,
-      },
-    });
-  }),
-
-  getAllFIR: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.fIR.findMany();
-  }),
-
+  // TODO: Remove me, after removing my use in TempSplitter.tsx
   getAllSectorFromFIR: publicProcedure
     .input(z.object({ firName: z.string() }))
     .query(({ input, ctx }) => {
@@ -33,22 +21,33 @@ export const facilityDataRouter = createTRPCRouter({
       });
     }),
 
-  getAllSector: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.sector.findMany();
+  getFacilityData: publicProcedure.query(({ ctx }) => {
+    const facilityData =  ctx.prisma.deliverables.findFirst({
+      where: { deliverableName: 'facilityData' },
+    });
+
+    console.log(facilityData);
+
+    return facilityData;
   }),
 
-  getFacilityDataFilenames: publicProcedure.query(({ ctx }) => {
-    const directoryPath = path.join(process.cwd(), "public", "facilityData");
-    // List all files in the directory
-    const files = fs.readdir(directoryPath);
-    return files;
+  getGroupData: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.deliverables.findFirst({
+      where: { deliverableName: 'groupData' },
+    });
   }),
 
+  // TODO: Is a better name appropriate here? What it's really doing
+  // is overwriting the comprehensive facility data file and updating
+  // the facility dataset timestamp in the database. It's a single pull
+  // of the individual files, and generation of the merged one.
   syncFacilityData: protectedProcedure.mutation(({ ctx }) => {
     console.log("sync facility data endpoint called");
     return syncFacilityData({ ctx });
   }),
 
+  // TODO: This is covered by getGroupData. Remove me once all users
+  // are reconnected to this.getGroupData()
   getFIRsWithGroups: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.fIR.findMany({
       include: {
@@ -61,6 +60,7 @@ export const facilityDataRouter = createTRPCRouter({
     });
   }),
 
+  // TODO: remove
   getGroupsWithSectorsFromFIR: publicProcedure
     .input(z.object({ firName: z.string() }))
     .query(({ input, ctx }) => {
@@ -74,6 +74,8 @@ export const facilityDataRouter = createTRPCRouter({
       });
     }),
 
+  // TODO: improve naming
+  // update group data
   batchAssignGroupsToSectors: protectedProcedure
     .input(
       z.object({
@@ -111,6 +113,7 @@ export const facilityDataRouter = createTRPCRouter({
           );
         }
 
+        // update the sector's group assignment
         await ctx.prisma.sector.update({
           where: {
             uniqueSectorID: sectorExists.uniqueSectorID,
@@ -118,6 +121,53 @@ export const facilityDataRouter = createTRPCRouter({
           data: {
             belongsToUniqueGroupID: groupId,
           },
+        });
+      }
+
+      // ---------- start new stuff below --------------
+
+      // build the group data deliverable
+      const currentGroupDbEntry = await ctx.prisma.deliverables.findFirst({ where: { deliverableName: 'groupData' }}) as Deliverable;
+      console.log(currentGroupDbEntry);
+      const currentGroupDataJson = JSON.parse(currentGroupDbEntry.content) as GroupCollection;
+      const groupTable = await ctx.prisma.group.findMany();
+      const nextGroupDataJson: GroupCollection = {
+        timestamp: Date.now(),
+        groups: groupTable.map(groupTableRow => {
+          const group = {
+            id: groupTableRow.uniqueGroupID,
+            fir: firName,
+            name: groupTableRow.groupName,
+            frequency: groupTableRow.groupFrequency,
+            notes: groupTableRow.notes,
+            color: groupTableRow.groupColor,
+            sectorList: assignments.filter(a => a.groupId === groupTableRow.uniqueGroupID).map(b => b.sectorId)
+          };
+
+          return group;
+        })
+      };
+
+      // if changes were made, update the group data deliverable with the new groupings
+      if (!_.isEqual(nextGroupDataJson.groups, currentGroupDataJson.groups)) {
+        // update the groupdata deliverable in the database
+        await ctx.prisma.deliverables.update({
+          where: {
+            deliverableName: 'groupData'
+          },
+          data: {
+            content: JSON.stringify(nextGroupDataJson)
+          }
+        });
+
+        // update the group dataset timestamp in the database
+        await ctx.prisma.timestamps.update({
+          where: {
+            name: 'groupDatasetTimestamp'
+          },
+          data: {
+            value: nextGroupDataJson.timestamp
+          }
         });
       }
 

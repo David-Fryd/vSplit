@@ -1,8 +1,8 @@
 import type {
-  FIRMetadata,
+  FirDetails,
   FacilityData,
-  Volume,
-  Sectors,
+  AirspaceVolume,
+  SectorNameMap,
   Geojson,
   Ownership,
   // AltitudeRange,
@@ -30,7 +30,7 @@ function isFacilityData(data: unknown): data is FacilityData {
     );
   }
 
-  if (!isFirMetadata(dataObject.fir)) {
+  if (!isFirDetails(dataObject.fir)) {
     throw new Error(
       "Invalid FacilityData: fir (fir metadata) field is not valid"
     );
@@ -42,7 +42,7 @@ function isFacilityData(data: unknown): data is FacilityData {
 
   if (
     !Array.isArray(dataObject.volumes) ||
-    !dataObject.volumes.every((volume) => isVolume(volume))
+    !dataObject.volumes.every((volume) => isAirspaceVolume(volume))
   ) {
     throw new Error("Invalid FacilityData: volumes is not valid");
   }
@@ -50,41 +50,41 @@ function isFacilityData(data: unknown): data is FacilityData {
   return true;
 }
 
-function isFirMetadata(data: unknown): data is FIRMetadata {
+function isFirDetails(data: unknown): data is FirDetails {
   if (typeof data !== "object" || data === null) {
-    throw new Error("Invalid FIRMetadata: fir should be an object");
+    throw new Error("Invalid FirDetails: fir should be an object");
   }
 
   const dataObject = data;
 
   if (!("firName" in dataObject) || !("firLabel" in dataObject)) {
     throw new Error(
-      "Invalid FIRMetadata: fir must contain firName and firLabel"
+      "Invalid FirDetails: fir must contain firName and firLabel"
     );
   }
 
   return true;
 }
 
-function isSectors(data: unknown): data is Sectors {
+function isSectors(data: unknown): data is SectorNameMap {
   if (typeof data !== "object" || data === null) {
-    throw new Error("Invalid Sectors: sectors should be an object");
+    throw new Error("Invalid SectorNameMap: sectors should be an object");
   }
 
   const dataObject = data as { [k: string]: unknown };
 
   for (const key in dataObject) {
     if (typeof dataObject[key] !== "string") {
-      throw new Error("Invalid Sectors: all sector values should be strings");
+      throw new Error("Invalid SectorNameMap: all sector values should be strings");
     }
   }
 
   return true;
 }
 
-function isVolume(data: unknown): data is Volume {
+function isAirspaceVolume(data: unknown): data is AirspaceVolume {
   if (typeof data !== "object" || data === null) {
-    throw new Error("Invalid Volume: volume should be an object");
+    throw new Error("Invalid AirspaceVolume: volume should be an object");
   }
 
   const dataObject = data as { [k: string]: unknown };
@@ -95,15 +95,15 @@ function isVolume(data: unknown): data is Volume {
     dataObject.labelLocation.length !== 2 ||
     !dataObject.labelLocation.every((x) => typeof x === "number")
   ) {
-    throw new Error("Invalid Volume: labelLocation is not valid");
+    throw new Error("Invalid AirspaceVolume: labelLocation is not valid");
   }
 
   if (!("ownership" in dataObject) || !isOwnership(dataObject.ownership)) {
-    throw new Error("Invalid Volume: ownership is not valid");
+    throw new Error("Invalid AirspaceVolume: ownership is not valid");
   }
 
   if (!("geojson" in dataObject) || !isGeojson(dataObject.geojson)) {
-    throw new Error("Invalid Volume: geojson is not valid");
+    throw new Error("Invalid AirspaceVolume: geojson is not valid");
   }
 
   return true;

@@ -9,6 +9,7 @@ const Sync: NextPage = () => {
 
   // Create a mutation using the syncFacilityData procedure
   const syncMutation = api.facilitydata.syncFacilityData.useMutation();
+  const currentFacilityData = api.facilitydata.getGroupData.useQuery();
 
   // Define the function to be called when the button is clicked
   const handleSync = () => {
@@ -39,8 +40,7 @@ const Sync: NextPage = () => {
           )}
           {syncMutation.data && (
             <p>
-              Synced!{" "}
-              {JSON.stringify(syncMutation.data /*as SyncFacilityDataReturn*/)}
+              {JSON.stringify(currentFacilityData)}
             </p>
           )}
         </>

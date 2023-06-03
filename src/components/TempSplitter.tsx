@@ -151,6 +151,10 @@ export const TempSplitter = ({ firName }: { firName: string }) => {
       firName: firName,
     });
 
+  // TODO: We have already retrieved the latest facility data in MainMap.tsx
+  //       Do not make any new requests here, just figure out how to share
+  //       the data from the MainMap to the TempSplitter. Is there somewhere
+  //       higher up in the app we can store this?
   const sectorList = api.facilitydata.getAllSectorFromFIR.useQuery({
     firName: firName,
   });

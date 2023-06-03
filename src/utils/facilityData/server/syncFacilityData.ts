@@ -2,13 +2,15 @@
 // THAT SYNCS DATABASE FIR DATA WITH THE FACILITY DATA IN THE PUBLIC DIRECTORY
 
 import { parseFacilityData } from "../parseFacilityData";
-import type { FacilityData } from "~/types/facilityData";
+import type { FacilityCollection, FacilityImproved, FacilityRaw } from "~/types/facilityData";
 
+import fsRegular from 'fs';
 import fs from "fs/promises";
 import path from "path";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import type { Session } from "next-auth";
 import assert from "assert";
+import _ from "lodash";
 
 export type SyncFacilityDataReturn = {
   firs: { firName: string; syncMessages: string[] }[];
@@ -30,7 +32,8 @@ export async function syncFacilityData({
   const directoryPath = path.join(process.cwd(), "public", "facilityData");
 
   // List all files in the directory
-  const files = await fs.readdir(directoryPath);
+  let files = await fs.readdir(directoryPath);
+  files = _.without(files, '~allFacilities.json');
 
   // Keep track of the FIR names we've already encountered
   // firName -> file name it was seen in (for error message purposes)
@@ -208,6 +211,57 @@ export async function syncFacilityData({
 
   await Promise.all(dataPromises);
 
-  // console.log("parsed data!", parsedData);
+  // TODO: Don't overwrite the file if there are no changes (other than timestamp)
+  // Generate comprehensive facilities file, and save it in public folder
+  const facilityCollection: FacilityCollection = {
+    timestamp: Date.now(),
+    facilities: []
+  };
+  const filePaths = files.map(filename => path.join(directoryPath, filename));
+
+  // Reformat all of the source data files to the desired format, and add to the FacilityCollection
+  for (const filePath of filePaths) {
+    const fileContent = fsRegular.readFileSync(filePath, 'utf8');
+    const facilityRawJson = JSON.parse(fileContent) as FacilityRaw;
+    const index = facilityCollection.facilities.length + 1;
+    const facility: FacilityImproved = {
+      firDetails: {
+        // TODO: The names in the FIR db table are misleading... improve them!
+        id: index + 1,
+        lid: facilityRawJson.fir.firName,
+        fullName: facilityRawJson.fir.firLabel
+      },
+      sectorNames: facilityRawJson.sectors,
+      airspaceVolumes: facilityRawJson.volumes
+    };
+
+    facilityCollection.facilities.push(facility);
+  }
+
+  // Assemble the comprehensive facility file
+  const comprehensiveFacilityFileName = '~allFacilities.json';
+  const comprehensiveFacilityFilePath = path.join(directoryPath, comprehensiveFacilityFileName);
+  const comprehensiveFacilityFileText = JSON.stringify(facilityCollection);
+  const currentFileRawText = fsRegular.readFileSync(comprehensiveFacilityFilePath, 'utf8');
+  const currentFileFacilityCollection = JSON.parse(currentFileRawText) as FacilityCollection;
+  const nextFileFacilityCollection = facilityCollection;
+  
+  // Apply changes only if the proposed data differs from the current
+  if (!_.isEqual(currentFileFacilityCollection.facilities, nextFileFacilityCollection.facilities)) {
+    // Write the comprehensive facility file
+    fsRegular.writeFileSync(comprehensiveFacilityFilePath, comprehensiveFacilityFileText);
+  
+    // Update the facility dataset timestamp in the database
+    await ctx.prisma.timestamps.update({
+      where: {
+        name: 'facilityDatasetTimestamp'
+      },
+      data: {
+        value: facilityCollection.timestamp
+        // value: 0
+      }
+    });
+  }
+
   return returnMessage;
 }

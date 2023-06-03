@@ -1,17 +1,16 @@
-import { Polygon, Polyline, Tooltip, SVGOverlay, Marker } from "react-leaflet";
-import type { AltitudeRange, FacilityData, Volume } from "~/types/facilityData";
-import type {
-  LatLngExpression,
-  LatLngTuple,
-  LatLngBoundsExpression,
-} from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { api } from "../api";
 import assert from "assert";
-import { averageHexFromGroupcolors } from "./colorUtils";
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+import type { AltitudeRange, AirspaceVolume, Deliverable, FacilityImproved, GroupCollection } from "~/types/facilityData";
+import type { LatLngExpression, LatLngBoundsExpression, } from "leaflet";
+import type { Sector } from "@prisma/client";
+
+import { Polygon, Tooltip, Marker } from "react-leaflet";
+import { api } from "../api";
+import { averageHexFromGroupcolors } from "./colorUtils";
 import { renderToString } from "react-dom/server";
-import { Sector } from "@prisma/client";
+
 
 const coordinatesToLatLngExpression = (
   coordinates: number[][][]
@@ -115,22 +114,32 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
 }
 
 export const renderPolygons = (
-  allFacilityData: FacilityData[],
-  allGroupData: unknown[]
+  allFacilityData: FacilityImproved[]
 ) => {
+
+  // TODO: delete me once replaced with the below
   const groupings = api.facilitydata.getFIRsWithGroups.useQuery();
-  console.log("GROUPINGS FROM DB: ", groupings.data);
+  
+  // TODO: Use me and then delete the above `groupings`!
+  const eqGroupData = api.facilitydata.getGroupData.useQuery().data as Deliverable;
+  // const { timestamp, groups } = JSON.parse(eqGroupData?.content) as GroupCollection;
+  
+  
+  
+  
+  
+  // console.log("GROUPINGS FROM DB: ", groupings.data);
 
-  return allFacilityData.flatMap((facilityData: FacilityData, i) => {
+  return allFacilityData.flatMap((facilityData: FacilityImproved, i) => {
     const currFacilityGrouping = groupings.data?.find(
-      (grouping) => grouping.firName === facilityData.fir.firName
+      (grouping) => grouping.firName === facilityData.firDetails.lid
     );
-    console.log(
-      "currently considering facility w groupings: ",
-      currFacilityGrouping
-    );
+    // console.log(
+    //   "currently considering facility w groupings: ",
+    //   currFacilityGrouping
+    // );
 
-    return facilityData.volumes.map((volume: Volume, j) => {
+    return facilityData.airspaceVolumes.map((volume: AirspaceVolume, j) => {
       if (currFacilityGrouping === undefined) {
         return null;
         // Don't render anything on the map if the groups haven't loaded yet
@@ -149,7 +158,7 @@ export const renderPolygons = (
           (sector) => sector.sectorID === key
         );
         if (sector === undefined) {
-          console.log(`sector is undefined for key ${key}`);
+          // console.log(`sector is undefined for key ${key}`);
           return null;
         }
 
@@ -176,17 +185,17 @@ export const renderPolygons = (
           const array = displayInfo[key];
           assert(array !== undefined, "array should not be undefined");
           array.push(newDisplayInfo);
-          console.log("pushed");
+          // console.log("pushed");
         } else {
           displayInfo[key] = [newDisplayInfo];
-          console.log("elsed");
+          // console.log("elsed");
         }
       }
 
       // Number of unique groups for a given volume w/ will determine the color/dashing of the polygon/boundaries
       const uniqueGroupsInfo: GroupInfo[] = [];
       for (const [key, value] of Object.entries(displayInfo)) {
-        console.log("examining key for unique groups: ", key);
+        // console.log("examining key for unique groups: ", key);
 
         value.forEach((sectorInfo) => {
           if (
@@ -213,11 +222,11 @@ export const renderPolygons = (
         ); /* TODO - Combine hex values as if they were overlaid transparently on one another */
 
       if (uniqueGroupsInfo.length !== 0) {
-        console.log(
-          `this given volume has ${
-            uniqueGroupsInfo.length
-          } groups (${JSON.stringify(uniqueGroupsInfo)})`
-        );
+        // console.log(
+        //   `this given volume has ${
+        //     uniqueGroupsInfo.length
+        //   } groups (${JSON.stringify(uniqueGroupsInfo)})`
+        // );
       }
 
       const positions = coordinatesToLatLngExpression(
@@ -255,7 +264,7 @@ export const renderPolygons = (
             eventHandlers={{
               click: (event) => {
                 L.DomEvent.stop(event);
-                console.log("clicked");
+                // console.log("clicked");
               },
             }}
           >
@@ -318,7 +327,7 @@ export const renderPolygons = (
                     {getSectorLabels(volume, currFacilityGrouping).join(", ")}
                   </span>
                 </div>
-                <span className="w-40 whitespace-normal text-xs text-neutral-500">{`${facilityData.fir.firName} volume ${j} `}</span>
+                <span className="w-40 whitespace-normal text-xs text-neutral-500">{`${facilityData.firDetails.lid} volume ${j} `}</span>
               </div>
             </Tooltip>
           </Polygon>
@@ -383,7 +392,7 @@ function combineDisplayInfo(displayInfo: DisplayInfo) {
 }
 
 function getSectorLabels(
-  volume: Volume,
+  volume: AirspaceVolume,
   currFacilityGrouping: { sectors: Sector[] }
 ) {
   const sectorLabels = [];
