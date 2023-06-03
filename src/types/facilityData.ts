@@ -41,6 +41,23 @@ export interface FacilityCollection {
   facilities: FacilityImproved[]
 }
 
+// the shape of the entire group data set
+export interface GroupCollection {
+  timestamp: number,
+  groups: Group[]
+}
+
+// a single group of sectors
+export interface Group {
+  id: number,
+  fir: string,
+  name: string,
+  frequency: string,
+  notes: string,
+  color: string,
+  sectorList: string[]
+}
+
 // TODO: Once everything is working, just use this format, and reformat the data files to match it.
 // facility shape used in comprehensive facility file
 export interface FacilityImproved {
@@ -62,4 +79,9 @@ export interface FacilityRaw {
   },
   sectors: object,
   volumes: AirspaceVolume[]
+}
+
+export interface Deliverable {
+  deliverableName: string,
+  content: string
 }

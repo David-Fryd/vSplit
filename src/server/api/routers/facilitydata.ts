@@ -6,6 +6,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { Deliverable, GroupCollection } from '~/types/facilityData';
 import { syncFacilityData } from "~/utils/facilityData/server/syncFacilityData";
 
 export const facilityDataRouter = createTRPCRouter({
@@ -126,9 +127,11 @@ export const facilityDataRouter = createTRPCRouter({
       // ---------- start new stuff below --------------
 
       // build the group data deliverable
-      const currentGroupDataJson = await ctx.prisma.deliverables.findFirst({ where: { deliverableName: 'groupData' }});
+      const currentGroupDbEntry = await ctx.prisma.deliverables.findFirst({ where: { deliverableName: 'groupData' }}) as Deliverable;
+      console.log(currentGroupDbEntry);
+      const currentGroupDataJson = JSON.parse(currentGroupDbEntry.content) as GroupCollection;
       const groupTable = await ctx.prisma.group.findMany();
-      const nextGroupDataJson = {
+      const nextGroupDataJson: GroupCollection = {
         timestamp: Date.now(),
         groups: groupTable.map(groupTableRow => {
           const group = {
@@ -146,9 +149,8 @@ export const facilityDataRouter = createTRPCRouter({
       };
 
       // if changes were made, update the group data deliverable with the new groupings
-      // TODO: this if statement doesn't seem to work, it changes it regardless. But why?
-      if (!_.isEqual(nextGroupDataJson.groups, JSON.parse(currentGroupDataJson.content).groups)) {
-        // update the groupdata in the database
+      if (!_.isEqual(nextGroupDataJson.groups, currentGroupDataJson.groups)) {
+        // update the groupdata deliverable in the database
         await ctx.prisma.deliverables.update({
           where: {
             deliverableName: 'groupData'
