@@ -35,7 +35,7 @@ export type SectorNameMap = {
   [sectorId: string]: string;
 };
 
-// the shape of the output file
+// the shape of `~allFacilities.json`
 export interface FacilityCollection {
   timestamp: number,
   facilities: FacilityImproved[]
@@ -45,7 +45,7 @@ export interface FacilityCollection {
 // facility shape used in comprehensive facility file
 export interface FacilityImproved {
   firDetails: {
-    id: number,
+    id: number, // TODO: Do we need this id field? Presumably not? Why did I put it there?
     lid: string,
     fullName: string
   },

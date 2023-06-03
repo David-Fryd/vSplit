@@ -1,18 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   MapContainer,
   TileLayer,
-  Polygon,
   AttributionControl,
-  SVGOverlay,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import type { LatLngExpression } from "leaflet";
-import { LatLngBounds } from "leaflet";
 import { api } from "../utils/api";
-import type { GeoJSON } from "leaflet";
-import { parseFacilityData } from "~/utils/facilityData/parseFacilityData";
-import type { FacilityData } from "~/types/facilityData";
+import type { FacilityCollection, FacilityData, FacilityImproved } from "~/types/facilityData";
 import { renderPolygons } from "~/utils/mapDisplay/renderPolygons";
 import LoadingIcon from "./LoadingIcon";
 import _ from "lodash";
@@ -24,7 +18,7 @@ const MainMap = () => {
   // TODO: Implement, and inform how groups are drawn etc...
   // const groups = api.facilitydata.getFIRsWithGroups.useQuery();
 
-  const [allFacilityData, setAllFacilityData] = React.useState<FacilityData[]>(
+  const [allFacilityData, setAllFacilityData] = React.useState<FacilityImproved[]>(
     []
   );
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -40,29 +34,41 @@ const MainMap = () => {
   const facilityFilesInPublicFolder = _.without(allFilesInPublicFolder.data,'~allFacilities.json');
 
   const fetchFacilityData = async () => {
-    const facilityDataArray: FacilityData[] = [];
-    for (const file of facilityFilesInPublicFolder ?? []) {
-      // console.log("getting facility data from file:", file);
-      setLoadingText(`Loading facility data from ${file}`);
-      const response = await fetch(`/facilityData/${file}`);
-      if (response.ok) {
-        const rawData = await response.text();
-        const facilityData = parseFacilityData(rawData);
-        // console.log("GOT FACILITY DATA:", facilityData);
-        facilityDataArray.push(facilityData);
-        setLoadingText(`Loaded ${facilityData.fir.firName} facility data`);
-      } else {
-        console.error(
-          `Failed to fetch facility data from ${file}: ${response.statusText}`
-        );
-        return null;
-      }
+    setLoadingText('Loading facility data...');
+    const facilityList: FacilityImproved[] = [];
+    const response = await fetch('/facilityData/~allFacilities.json');
+    if (response.ok) {
+      const rawData = await response.text();
+      const jsonData = JSON.parse(rawData) as FacilityCollection;
+      facilityList.push(...jsonData.facilities);
+      setLoadingText('Facility data loaded.');
+    } else {
+      console.error(`Failed to load facility data: ${response.statusText}`);
+
+      return null;
     }
-    // if (facilityFilesInPublicFolder.error.data) {
-    //   setErrorText(`Could not load files from public folder`);
-    //   console.log(`setting error text to ${errorText ? errorText : ""}`);
+    // for (const file of facilityFilesInPublicFolder ?? []) {
+    //   // console.log("getting facility data from file:", file);
+    //   setLoadingText(`Loading facility data from ${file}`);
+    //   const response = await fetch(`/facilityData/${file}`);
+    //   if (response.ok) {
+    //     const rawData = await response.text();
+    //     const facilityData = parseFacilityData(rawData);
+    //     // console.log("GOT FACILITY DATA:", facilityData);
+    //     facilityList.push(facilityData);
+    //     setLoadingText(`Loaded ${facilityData.fir.lid} facility data`);
+    //   } else {
+    //     console.error(
+    //       `Failed to fetch facility data from ${file}: ${response.statusText}`
+    //     );
+    //     return null;
+    //   }
     // }
-    setAllFacilityData(facilityDataArray);
+    // // if (facilityFilesInPublicFolder.error.data) {
+    // //   setErrorText(`Could not load files from public folder`);
+    // //   console.log(`setting error text to ${errorText ? errorText : ""}`);
+    // // }
+    setAllFacilityData(facilityList);
     setLoading(false);
     setLoadingText("");
   };

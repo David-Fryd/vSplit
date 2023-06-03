@@ -1,5 +1,5 @@
 import { Polygon, Polyline, Tooltip, SVGOverlay, Marker } from "react-leaflet";
-import type { AltitudeRange, FacilityData, AirspaceVolume } from "~/types/facilityData";
+import type { AltitudeRange, FacilityData, AirspaceVolume, FacilityImproved } from "~/types/facilityData";
 import type {
   LatLngExpression,
   LatLngTuple,
@@ -115,22 +115,22 @@ function DisplayInfoComponent({ displayInfo }: { displayInfo: DisplayInfo }) {
 }
 
 export const renderPolygons = (
-  allFacilityData: FacilityData[],
+  allFacilityData: FacilityImproved[],
   allGroupData: unknown[]
 ) => {
   const groupings = api.facilitydata.getFIRsWithGroups.useQuery();
   // console.log("GROUPINGS FROM DB: ", groupings.data);
 
-  return allFacilityData.flatMap((facilityData: FacilityData, i) => {
+  return allFacilityData.flatMap((facilityData: FacilityImproved, i) => {
     const currFacilityGrouping = groupings.data?.find(
-      (grouping) => grouping.firName === facilityData.fir.firName
+      (grouping) => grouping.firName === facilityData.firDetails.lid
     );
     // console.log(
     //   "currently considering facility w groupings: ",
     //   currFacilityGrouping
     // );
 
-    return facilityData.volumes.map((volume: AirspaceVolume, j) => {
+    return facilityData.airspaceVolumes.map((volume: AirspaceVolume, j) => {
       if (currFacilityGrouping === undefined) {
         return null;
         // Don't render anything on the map if the groups haven't loaded yet
@@ -318,7 +318,7 @@ export const renderPolygons = (
                     {getSectorLabels(volume, currFacilityGrouping).join(", ")}
                   </span>
                 </div>
-                <span className="w-40 whitespace-normal text-xs text-neutral-500">{`${facilityData.fir.firName} volume ${j} `}</span>
+                <span className="w-40 whitespace-normal text-xs text-neutral-500">{`${facilityData.firDetails.lid} volume ${j} `}</span>
               </div>
             </Tooltip>
           </Polygon>
